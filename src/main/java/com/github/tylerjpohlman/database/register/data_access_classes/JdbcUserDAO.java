@@ -70,7 +70,7 @@ public interface JdbcUserDAO {
      * @return double representing the amount due on the receipt
      * @throws SQLException if any error with creating receipt in database
      */
-    public double finalizeReceipt(Connection connection, List<Item> list, int receiptNumber, Member member) throws SQLException;
+    public double getReceiptTotal(Connection connection, List<Item> list, int receiptNumber, Member member) throws SQLException;
 
     /**
      * Returns associated Member object from search using phone number in database.

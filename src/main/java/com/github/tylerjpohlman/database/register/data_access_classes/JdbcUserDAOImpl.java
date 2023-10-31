@@ -188,7 +188,7 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
      * @return double representing the amount due on the receipt
      * @throws SQLException if any error with creating receipt in database
      */
-    public double finalizeReceipt(Connection connection, List<Item> list, int receiptNumber, Member member)
+    public double getReceiptTotal(Connection connection, List<Item> list, int receiptNumber, Member member)
             throws SQLException {
         double amountDue = 0.0, stateTax = 0.0;
 

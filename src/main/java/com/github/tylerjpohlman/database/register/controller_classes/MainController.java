@@ -174,7 +174,7 @@ public class MainController extends ControllerMethods {
 
         try {
             receiptNumber = jdbcUserDAOImpl.createReceipt(connection, member, registerNum);
-            amountDue = jdbcUserDAOImpl.finalizeReceipt(connection, addedItemsList.getItems(), receiptNumber, member);
+            amountDue = jdbcUserDAOImpl.getReceiptTotal(connection, addedItemsList.getItems(), receiptNumber, member);
 
         //error is unlikely to be thrown if connection was already check, so just click the button again
         } catch (SQLException e) {
