@@ -10,11 +10,10 @@ import java.util.List;
 public interface JdbcUserDAO {
 
     /**
-     * Checks if the current Connection object is closed.
-     * @param connection Connection object for MySQL database
-     * @return true if closed, empty, or any other errors; false if open
+     * Checks if the current connection to database is attainable.
+     * @return false if closed, empty, or any other errors; true if open
      */
-    boolean isConnectionNotReachable(Connection connection);
+    boolean isConnectionReachable();
 
     /**
      * Tries logging in using credentials and returns connection object if able to do so.
@@ -29,48 +28,41 @@ public interface JdbcUserDAO {
      * @throws InvalidRegisterException    if the given register number is found in the database
      * @throws SQLException                if an unknown exception occurs that is accounted for
      */
-    Connection getConnectionFromLogin(String url, String username, String password, int registerNumber)
+    void setConnectionFromLogin(String url, String username, String password, int registerNumber)
             throws DriverNotFoundException, ServerConnectionException, InvalidCredentialsException,
             InvalidRegisterException, SQLException;
 
     /**
-     * @param connection     Connection object which has been properly logged into databased
-     * @param registerNumber int representing register number
+     * Gets the associated store address from the register login details.
      * @return String for concatenation of database's associated address
      * @throws SQLException if unable to get address from database
      */
-    String getAddressFromConnection(Connection connection, int registerNumber) throws SQLException;
+    String getAddressFromConnection() throws SQLException;
 
     /**
      * Grabs Item information with given upc value.
-     *
-     * @param connection Connection object
      * @param upc        long representing 12 digit upc
      * @return Item object with associated details
      * @throws SQLException if unable to find Item with associated UPC in database
      */
-    Item getItemFromUPC(Connection connection, long upc) throws SQLException;
+    Item getItemFromUPC(long upc) throws SQLException;
 
     /**
      * Creates a receipt column in database and returns the receipt's associated number.
-     *
-     * @param connection  Connection object
      * @param member      Member object
-     * @param registerNum int register number
      * @throws SQLException if an error occurs while interacting with database
      */
-    int createReceipt(Connection connection, Member member, int registerNum) throws SQLException;
+    int createReceipt(Member member) throws SQLException;
 
     /**
      * Uses the created receipt number to add items to receipt in database.
-     * @param connection Connection object
      * @param list List of items
      * @param receiptNumber int representing associated receipt number
      * @param member Member object
      * @return double representing the amount due on the receipt
      * @throws SQLException if any error with creating receipt in database
      */
-    public double getReceiptTotal(Connection connection, List<Item> list, int receiptNumber, Member member) throws SQLException;
+    public double getReceiptTotal(List<Item> list, int receiptNumber, Member member) throws SQLException;
 
     /**
      * Returns associated Member object from search using phone number in database.
@@ -79,7 +71,7 @@ public interface JdbcUserDAO {
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
      */
-    public Member getMemberFromPhoneNumber(Connection connection, long phoneNumber) throws SQLException;
+    public Member getMemberFromPhoneNumber(long phoneNumber) throws SQLException;
 
     /**
      * Returns associated Member object from search using account number in database.
@@ -88,7 +80,7 @@ public interface JdbcUserDAO {
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
      */
-    public Member getMemberFromAccountNumber(Connection connection, long accountNumber) throws SQLException;
+    public Member getMemberFromAccountNumber(long accountNumber) throws SQLException;
 
     /**
      *
@@ -100,7 +92,7 @@ public interface JdbcUserDAO {
      * @throws SQLException if error when executing statement to database
      * @throws IllegalArgumentException if amountPaid is less than amountDue
      */
-    public double finalizeReceipt(Connection connection, double amountPaid, double amountDue, long receiptNumber)
+    public double finalizeReceipt(double amountPaid, double amountDue, long receiptNumber)
             throws SQLException, IllegalArgumentException;
 
 

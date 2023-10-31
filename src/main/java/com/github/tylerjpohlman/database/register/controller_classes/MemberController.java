@@ -30,8 +30,6 @@ public class MemberController extends ControllerMethods{
         //reset the error label
         errorLabel.setText("");
 
-        //used to access SQL statements
-        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
         try {
             //if there isn't any entered text
             if (phoneNumberTextField.getText().isEmpty() && memberIDTextField.getText().isEmpty()) {
@@ -43,13 +41,13 @@ public class MemberController extends ControllerMethods{
                 //grabs the phone number
                 //also removes all the misc. chars when someone types in a phone number and just keeps the digits
                 long phoneNumber = Long.parseLong(phoneNumberTextField.getText().replaceAll("[^0-9]", ""));
-                member = jdbcUserDAOImpl.getMemberFromPhoneNumber(connection, phoneNumber);
+                member = jdbcUserDAO.getMemberFromPhoneNumber(phoneNumber);
             }
             //if only the account number is provided
             else {
                 //grabs the account number
                 long accountNumber = Long.parseLong(memberIDTextField.getText().replaceAll("[^0-9]", ""));
-                member = jdbcUserDAOImpl.getMemberFromAccountNumber(connection, accountNumber);
+                member = jdbcUserDAO.getMemberFromAccountNumber(accountNumber);
             }
         } catch (SQLException e) {
             errorLabel.setText("Unable to find membership with provided phone number / member id.");
@@ -68,12 +66,10 @@ public class MemberController extends ControllerMethods{
         }
 
         try {
-            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event);
+            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            mainController.setJdbcUserDAO(jdbcUserDAO);
             mainController.setMemberLabel(member);
-            mainController.setConnection(connection);
             mainController.setMember(member);
-
-            mainController.setRegisterNumber(registerNumber);
             mainController.setAddressLabel();
 
         } catch (ClosedConnectionException | IOException e) {
@@ -88,7 +84,9 @@ public class MemberController extends ControllerMethods{
      */
     public void goBackOnClick(ActionEvent event) throws IOException {
         try {
-            goToNextWindow(mainFXMLFile, event);
+            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            mainController.setJdbcUserDAO(jdbcUserDAO);
+            mainController.setAddressLabel();
         } catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
         }

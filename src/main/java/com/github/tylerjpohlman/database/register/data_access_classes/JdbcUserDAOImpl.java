@@ -8,51 +8,51 @@ import java.sql.*;
 import java.util.List;
 
 public class JdbcUserDAOImpl implements JdbcUserDAO {
+    /**
+     * MySQL Connection to database using login credentials
+     */
+    private Connection connection = null;
+    /**
+     * Register number used to sign in to MySQL database
+     */
+    private int registerNumber;
+
     private PreparedStatement ps = null;
     private ResultSet rs = null;
 
     /**
-     * Checks if the current Connection object is closed.
-     *
-     * @param connection Connection object for MySQL database
-     * @return true if closed, empty, or any other errors; false if open
+     * Constructor with tries logging into database and establishing connection when invoked.
+     * @param url String representing database url
+     * @param username String representing username
+     * @param password String representing password
+     * @param registerNumber int representing the register number
+     * @throws SQLException if there's an error logging in to database
      */
-    public boolean isConnectionNotReachable(Connection connection) {
+    public JdbcUserDAOImpl(String url, String username, String password, int registerNumber) throws SQLException {
+        setConnectionFromLogin(url, username, password, registerNumber);
+        this.registerNumber = registerNumber;
+    }
+
+    public boolean isConnectionReachable() {
         try {
             //checks if Connection is closed
             if (connection != null && connection.isClosed()) {
-                return true;
+                return false;
             }
             //if there's no connection object at all
             else if (connection == null) {
-                return true;
+                return false;
             }
             //any other Connection errors will also return true
         } catch (SQLException e) {
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
-    /**
-     * @param url            String containing url to database (append 'jdbc:mysql://' to the beginning)
-     * @param username       String representing associated username
-     * @param password       String representing associated password
-     * @param registerNumber int register register number
-     * @return Connection which is logged into database
-     * @throws DriverNotFoundException     if not suitable jdbc driver is found in program
-     * @throws ServerConnectionException   if server-related issue: issues contacting, no database selected, no server found
-     * @throws InvalidCredentialsException if either the username and/or password is incorrect
-     * @throws InvalidRegisterException    if the given register number is found in the database
-     * @throws SQLException                if an unknown exception occurs that is accounted for
-     */
-    public Connection getConnectionFromLogin(String url, String username, String password, int registerNumber)
-            throws DriverNotFoundException, ServerConnectionException, InvalidCredentialsException,
-            InvalidRegisterException, SQLException {
-
-        Connection connection;
-
+    public void setConnectionFromLogin(String url, String username, String password, int registerNumber)
+            throws SQLException {
         try {
             //tries to establish a connection to the database
             connection = DriverManager.getConnection(url, username, password);
@@ -62,8 +62,6 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
             ps.setString(1, username);
             ps.setInt(2, registerNumber);
             ps.execute();
-
-            ps.close();
 
         } catch (SQLException e) {
             String errorCode = e.getSQLState();
@@ -86,17 +84,9 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
                     throw new SQLException(e);
             }
         }
-
-        return connection;
     }
 
-    /**
-     * @param connection     Connection object which has been properly logged into databased
-     * @param registerNumber int representing register number
-     * @return String for concatenation of database's associated address
-     * @throws SQLException if unable to get address from database
-     */
-    public String getAddressFromConnection(Connection connection, int registerNumber) throws SQLException {
+    public String getAddressFromConnection() throws SQLException {
         String address = null;
 
         //grabs the address using the registerID
@@ -119,13 +109,11 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
     /**
      * Grabs Item information with given upc value.
-     *
-     * @param connection Connection object
      * @param upc        long representing 12 digit upc
      * @return Item object with associated details
      * @throws SQLException if unable to find Item with associated UPC in database
      */
-    public Item getItemFromUPC(Connection connection, long upc) throws SQLException {
+    public Item getItemFromUPC(long upc) throws SQLException {
         String name = null;
         double price = 0.0, discount = 0.0;
 
@@ -146,27 +134,18 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         return new Item(upc, name, price, discount);
     }
 
-    /**
-     * Creates a receipt column in database and returns the receipt's associated number.
-     *
-     * @param connection  Connection object
-     * @param member      Member object
-     * @param registerNum int register number
-     * @throws SQLException if an error occurs while interacting with database
-     */
-    public int createReceipt(Connection connection, Member member, int registerNum) throws SQLException {
+    public int createReceipt(Member member) throws SQLException {
         String createReceipt;
         int receiptNumber = 0;
-        double amountDue = 0.0, stateTax = 0.0;
 
         //if there is no provided membership
         if (member == null) {
 
-            createReceipt = "CALL createReceipt(" + registerNum + ", null)";
+            createReceipt = "CALL createReceipt(" + registerNumber + ", null)";
         }
         //a membership was provided
         else {
-            createReceipt = "CALL createReceipt('" + registerNum + "', '" + member.getAccountNumber() + "')";
+            createReceipt = "CALL createReceipt('" + registerNumber + "', '" + member.getAccountNumber() + "')";
         }
 
         ps = connection.prepareStatement(createReceipt);
@@ -179,16 +158,8 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         return receiptNumber;
     }
 
-    /**
-     * Uses the created receipt number to add items to receipt in database.
-     * @param connection Connection object
-     * @param list List of items
-     * @param receiptNumber int representing associated receipt number
-     * @param member Member object
-     * @return double representing the amount due on the receipt
-     * @throws SQLException if any error with creating receipt in database
-     */
-    public double getReceiptTotal(Connection connection, List<Item> list, int receiptNumber, Member member)
+
+    public double getReceiptTotal(List<Item> list, int receiptNumber, Member member)
             throws SQLException {
         double amountDue = 0.0, stateTax = 0.0;
 
@@ -228,12 +199,11 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
     /**
      * Returns associated Member object from search using phone number in database.
-     * @param connection Connection object
      * @param phoneNumber long representing phone number
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
      */
-    public Member getMemberFromPhoneNumber(Connection connection, long phoneNumber) throws SQLException {
+    public Member getMemberFromPhoneNumber(long phoneNumber) throws SQLException {
         Member member = null;
 
         String sqlStatement = "Call memberPhoneLookup('" + phoneNumber + "')";
@@ -255,12 +225,11 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
     /**
      * Returns associated Member object from search using account number in database.
-     * @param connection Connection object
      * @param accountNumber long representing associated phone number
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
      */
-    public Member getMemberFromAccountNumber(Connection connection, long accountNumber) throws SQLException {
+    public Member getMemberFromAccountNumber(long accountNumber) throws SQLException {
         Member member = null;
 
         String sqlStatement = "Call memberAccountNumberLookup(" + accountNumber + ")";
@@ -279,20 +248,9 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         return member;
     }
 
-
-    /**
-     *
-     * @param connection Connection object
-     * @param amountPaid double representing amount paid for transaction
-     * @param amountDue double representing amount due for transaction
-     * @param receiptNumber long representing the receipt number
-     * @return double representing the change due--i.e., difference between the amounts
-     * @throws SQLException if error when executing statement to database
-     * @throws IllegalArgumentException if amountPaid is less than amountDue
-     */
-    public double finalizeReceipt(Connection connection, double amountPaid, double amountDue, long receiptNumber)
+    public double finalizeReceipt(double amountPaid, double amountDue, long receiptNumber)
             throws SQLException, IllegalArgumentException {
-        if(isConnectionNotReachable(connection)) {
+        if(!isConnectionReachable()) {
             throw new ClosedConnectionException();
         }
 
@@ -307,5 +265,9 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         ps.execute();
 
         return Double.parseDouble(String.format("%.2f", amountPaid - amountDue));
+    }
+
+    public int getRegisterNumber() {
+        return registerNumber;
     }
 }

@@ -1,8 +1,8 @@
 package com.github.tylerjpohlman.database.register.controller_classes;
 
+import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAO;
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
 import com.github.tylerjpohlman.database.register.helper_classes.Member;
-import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -13,40 +13,40 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 public abstract class ControllerMethods {
-    /**
-     * MySQL Connection to database using login credentials
-     */
-    protected Connection connection = null;
+
     /**
      * Associated Member found in MySQL database
      */
     protected Member member = null;
 
-    protected int registerNumber;
-
+    /**
+     * Data Access Object used to interface with MySQL database.
+     */
+    protected JdbcUserDAO jdbcUserDAO = null;
     protected static final String mainFXMLFile = "main-view.fxml";
     protected static final String introductionFXMLFile = "introduction-view.fxml";
     protected static final String memberFXMLFile = "member-view.fxml";
     protected static final String payFXMLFile = "pay-view.fxml";
 
 
+    public void setJdbcUserDAO(JdbcUserDAO jdbcUserDAO) {
+        this.jdbcUserDAO = jdbcUserDAO;
+    }
 
     /**
      * Sets the current window to a new window given the name of that window's FXML file.
      * @param fileName name of FXML file
      * @param event ActionEvent most likely representing a button click
+     * @param jdbcUserDAO data access object used to interface with database
      * @return Object representing instance of controller class
      * @throws IOException if error occurs when loading FXML file
      * @throws ClosedConnectionException if Connection object is closed
      */
-    protected Object goToNextWindow(String fileName, ActionEvent event) throws IOException, ClosedConnectionException {
-        //checks if connection is still open
-        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
+    protected Object goToNextWindow(String fileName, ActionEvent event, JdbcUserDAO jdbcUserDAO) throws IOException, ClosedConnectionException {
 
-        if(jdbcUserDAOImpl.isConnectionNotReachable(connection)) {
+        if(!jdbcUserDAO.isConnectionReachable()) {
             throw new ClosedConnectionException();
         }
 
@@ -100,13 +100,6 @@ public abstract class ControllerMethods {
             }
     }
 
-    /**
-     * Sets the SQL Connection used in controller class.
-     * @param connection an SQL Connection
-     */
-    protected void setConnection(Connection connection) {
-        this.connection = connection;
-    }
 
     /**
      * Sets Member object.
@@ -116,13 +109,7 @@ public abstract class ControllerMethods {
         this.member = member;
     }
 
-    /**
-     * Sets the register number used in controller class.
-     * @param registerNumber a String
-     */
-    protected void setRegisterNumber(int registerNumber) {
-        this.registerNumber = registerNumber;
-    }
+
 
 
 }

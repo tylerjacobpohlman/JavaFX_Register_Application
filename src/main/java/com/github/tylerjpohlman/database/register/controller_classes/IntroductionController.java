@@ -40,26 +40,32 @@ public class IntroductionController extends ControllerMethods {
         //resets error label
         errorLabel.setText("");
 
+        //check if the text fields are empty
+        if (urlTextField.getText().isEmpty() || usernameTextField.getText().isEmpty() ||
+                passwordTextField.getText().isEmpty() || registerNumTextField.getText().isEmpty()) {
+            errorLabel.setText("Error: One or more of the text fields are empty!");
+            return;//exit the method
+        }
+
         //grab information from all the text field
         String url = urlTextField.getText();
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
-        String registerNum = registerNumTextField.getText();
+        int registerNum;
 
-        //check if the text fields are empty
-        if (url.isEmpty() || username.isEmpty() || password.isEmpty() || registerNum.isEmpty()) {
-            errorLabel.setText("Error: One or more of the text fields are empty!");
-            return;//exit the method
+        try {
+            registerNum = Integer.parseInt(registerNumTextField.getText());
+        } catch(NumberFormatException e) {
+            errorLabel.setText("Register id can only contain numeric values!");
+            registerNumTextField.clear();
+            return;
         }
 
         //add driver part to url if it isn't empty
         url = "jdbc:mysql://" + url;
 
-        //used to access SQL methods
-        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
-
         try {
-            connection = jdbcUserDAOImpl.getConnectionFromLogin(url, username, password, Integer.parseInt(registerNum));
+            jdbcUserDAO = new JdbcUserDAOImpl(url, username, password, registerNum);
         } catch (DriverNotFoundException e) {
             errorLabel.setText("Error: Driver for connecting to database not found. Please exit program");
             return;
@@ -78,9 +84,8 @@ public class IntroductionController extends ControllerMethods {
         }
 
         try {
-            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event);
-            mainController.setConnection(connection);//passes Connection object
-            mainController.setRegisterNumber(Integer.parseInt(registerNum));
+            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            mainController.setJdbcUserDAO(jdbcUserDAO);//passes Connection
             mainController.setAddressLabel();//executes method defined in class
         }
         catch (ClosedConnectionException e) {

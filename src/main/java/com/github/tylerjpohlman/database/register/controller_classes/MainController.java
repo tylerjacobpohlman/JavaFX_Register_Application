@@ -35,11 +35,8 @@ public class MainController extends ControllerMethods {
      * Sets the address Label in the main view of the JavaFX program.
      */
     public void setAddressLabel() {
-        //used to access SQL methods
-        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
-
         try {
-            String address = jdbcUserDAOImpl.getAddressFromConnection(connection, registerNumber);
+            String address = jdbcUserDAO.getAddressFromConnection();
             addressLabel.setText(address);
         } catch (SQLException e) {
             addressLabel.setText("Unable to obtain address from server!");
@@ -64,8 +61,6 @@ public class MainController extends ControllerMethods {
      * @param event an ActionEvent of type "button click"
      */
     public void addItemOnClick(ActionEvent event) {
-        //used to access SQL methods
-        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
 
         //resets the error label
         errorLabel.setText("");
@@ -77,7 +72,7 @@ public class MainController extends ControllerMethods {
         }
 
         //checks if connection is closed
-        if(jdbcUserDAOImpl.isConnectionNotReachable(connection)) {
+        if(!jdbcUserDAO.isConnectionReachable()) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
             return;
         }
@@ -97,19 +92,17 @@ public class MainController extends ControllerMethods {
         Item item;
 
         try {
-            item = jdbcUserDAOImpl.getItemFromUPC(connection, upc);
+            item = jdbcUserDAO.getItemFromUPC(upc);
         } catch (SQLException e) {
             errorLabel.setText("Unable to find item!");
             //blank out the upc text field
             itemUPCTextField.clear();
             return;
         }
-
             //blank out the upc text field
-            itemUPCTextField.setText("");
+            itemUPCTextField.clear();
             //adds grabbed Item object and adds it to added items list
             addedItemsList.getItems().add(item);
-
     }
 
 
@@ -132,9 +125,8 @@ public class MainController extends ControllerMethods {
         }
 
         try {
-            MemberController memberController = (MemberController) goToNextWindow(memberFXMLFile, event);
-            memberController.setConnection(connection);//passes Connection object
-            memberController.setRegisterNumber(registerNumber);
+            MemberController memberController = (MemberController) goToNextWindow(memberFXMLFile, event, jdbcUserDAO);
+            memberController.setJdbcUserDAO(jdbcUserDAO);//passes Connection
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
@@ -152,11 +144,8 @@ public class MainController extends ControllerMethods {
             return;
         }
 
-        //used to access SQL methods
-        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
-
         //checks if connection is closed
-        if(jdbcUserDAOImpl.isConnectionNotReachable(connection)) {
+        if(!jdbcUserDAO.isConnectionReachable()) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
             return;
         }
@@ -165,8 +154,8 @@ public class MainController extends ControllerMethods {
         double amountDue;
 
         try {
-            receiptNumber = jdbcUserDAOImpl.createReceipt(connection, member, registerNumber);
-            amountDue = jdbcUserDAOImpl.getReceiptTotal(connection, addedItemsList.getItems(), receiptNumber, member);
+            receiptNumber = jdbcUserDAO.createReceipt(member);
+            amountDue = jdbcUserDAO.getReceiptTotal(addedItemsList.getItems(), receiptNumber, member);
 
         //error is unlikely to be thrown if connection was already check, so just click the button again
         } catch (SQLException e) {
@@ -176,8 +165,8 @@ public class MainController extends ControllerMethods {
 
         try {
             //considering all goes well, goes on to the final scene to get the amount paid and amount due
-            PayController payController = (PayController)goToNextWindow(payFXMLFile, event);
-            payController.setConnection(connection);
+            PayController payController = (PayController)goToNextWindow(payFXMLFile, event, jdbcUserDAO);
+            payController.setJdbcUserDAO(jdbcUserDAO);
             payController.setMember(member);
             payController.setReceiptNumber(receiptNumber);
             payController.setAmountTotalLabel(amountDue);

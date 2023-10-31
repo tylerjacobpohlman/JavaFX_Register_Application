@@ -24,8 +24,6 @@ public class PayController extends ControllerMethods {
     @FXML
     private TextField amountPaidTextField;
     @FXML
-    private Button startNewTransactionButton;
-    @FXML
     private Label errorLabel;
     @FXML
     private Label changeDueField;
@@ -79,11 +77,8 @@ public class PayController extends ControllerMethods {
             return;
         }
 
-        //used to access SQL methods
-        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
-
         try {
-            double changeDue = jdbcUserDAOImpl.finalizeReceipt(connection, amountPaid, amountDue, receiptNumber);
+            double changeDue = jdbcUserDAO.finalizeReceipt(amountPaid, amountDue, receiptNumber);
             changeDueField.setText(String.valueOf(changeDue));
 
             finishedReceipt = true;
@@ -116,8 +111,9 @@ public class PayController extends ControllerMethods {
 
         try {
             //go back to main scene
-            MainController mainController = (MainController) goToNextWindow(mainFXMLFile, event);
-            mainController.connection = connection;
+            MainController mainController = (MainController) goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            mainController.setJdbcUserDAO(jdbcUserDAO);
+            mainController.setAddressLabel();
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
