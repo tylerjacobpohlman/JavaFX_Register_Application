@@ -95,7 +95,6 @@ public class MainController extends ControllerMethods {
         //grabs upc and checks if it's only numeric values
         long upc;
         try {
-            String upcString = itemUPCTextField.getText();
             upc = Long.parseLong(itemUPCTextField.getText());
         } catch (NumberFormatException e) {
             errorLabel.setText("Type in only a 12 digit numeric value!");
@@ -129,6 +128,12 @@ public class MainController extends ControllerMethods {
      * @throws IOException if unable to read associated FXML document
      */
     public void memberLookupOnCLick(ActionEvent event) throws IOException {
+        //check if one or more items are added
+        if(!addedItemsList.getItems().isEmpty()) {
+            errorLabel.setText("Cannot input membership after adding items");
+            return;
+        }
+
         //checks for already inputted membership
         if(member != null) {
             errorLabel.setText("Membership already inputted...");
@@ -164,8 +169,8 @@ public class MainController extends ControllerMethods {
             return;
         }
 
-        int receiptNumber = 0;
-        double amountDue = 0.0;
+        int receiptNumber;
+        double amountDue;
 
         try {
             receiptNumber = jdbcUserDAOImpl.createReceipt(connection, member, registerNum);
@@ -173,7 +178,7 @@ public class MainController extends ControllerMethods {
 
         //error is unlikely to be thrown if connection was already check, so just click the button again
         } catch (SQLException e) {
-            errorLabel.setText("Please try again...");
+            errorLabel.setText(e.getMessage());
             return;
         }
 
