@@ -1,12 +1,12 @@
 package com.github.tylerjpohlman.database.register.helper_classes;
 
 public class Item {
-    private String upc;
+    private long upc;
     private String name;
     private double price;
     private double discount;
 
-    public Item(String upc, String name, double price, double discount) {
+    public Item(long upc, String name, double price, double discount) {
         this.upc = upc;
         this.name = name;
         this.price = price;
@@ -14,7 +14,7 @@ public class Item {
     }
 
 
-    public String getUpc() {
+    public long getUpc() {
         return upc;
     }
     public String getName() {
