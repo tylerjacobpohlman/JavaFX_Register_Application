@@ -1,6 +1,7 @@
 package com.github.tylerjpohlman.database.register.controller_classes;
 
-import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
+import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
+import com.github.tylerjpohlman.database.register.helper_classes.*;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,8 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 
@@ -56,52 +55,39 @@ public class IntroductionController extends ControllerMethods {
         //add driver part to url if it isn't empty
         url = "jdbc:mysql://" + url;
 
-        //try logging in using credentials
+        //used to access SQL methods
+        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
+
         try {
-            //tries to establish a connection to the database
-            connection = DriverManager.getConnection(url, username, password);
-
-            //tries cashier login procedure
-            PreparedStatement ps = connection.prepareStatement("CALL cashierRegisterLogin(?, ?)");
-            ps.setString(1, username);
-            ps.setString(2, registerNum);
-            ps.execute();
-
+            connection = jdbcUserDAOImpl.getConnectionFromLogin(url, username, password, Integer.parseInt(registerNum));
+        } catch (DriverNotFoundException e) {
+            errorLabel.setText("Error: Driver for connecting to database not found. Please exit program");
+            return;
+        } catch (ServerConnectionException e) {
+            errorLabel.setText("Error: Cannot access database! Try a different url or try again.");
+            return;
+        } catch (InvalidCredentialsException e) {
+            errorLabel.setText("Error: Invalid Username or Password!");
+            return;
+        } catch (InvalidRegisterException e) {
+            errorLabel.setText("Error: Invalid register number!");
+            return;
         } catch (SQLException e) {
-            String errorCode = e.getSQLState();
-            switch (errorCode) {
-                //if the driver isn't downloaded or defined in the url
-                case "08001":
-                    errorLabel.setText("Error: Driver for connecting to database not found. Please exit program");
-                    break;
-                //if there's issue contacting the server, a database isn't selected, or the server cannot be found at all
-                case "08S01", "3D000":
-                case null:
-                    errorLabel.setText("Error: Cannot access database! Try a different url or try again.");
-                    break;
-                //if either the username and/or password is incorrect
-                case "28000":
-                    errorLabel.setText("Error: Invalid Username or Password!");
-                    break;
-                //error defined in database: "no such register_id and/or cashier_id exists"
-                //basically, this error is invoked when an invalid register number is given
-                case "45000":
-                    errorLabel.setText("Error: Invalid register number!");
-                    break;
-                default:
-                    errorLabel.setText("Error: " + errorCode);
-                    break;
-            }
+            errorLabel.setText("Error: " + e.getMessage());
+            return;
         }
 
         try {
             MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event);
             mainController.setConnection(connection);//passes Connection object
-            mainController.setRegisterNum(registerNum);//passes String object
+            mainController.setRegisterNum(Integer.parseInt(registerNum));
             mainController.setAddressLabel();//executes method defined in class
         }
         catch (ClosedConnectionException e) {
             errorLabel.setText("Connection has timed out, please try again...");
+        }
+        catch (SQLException e ) {
+            errorLabel.setText(e.getMessage());
         }
     }
 }

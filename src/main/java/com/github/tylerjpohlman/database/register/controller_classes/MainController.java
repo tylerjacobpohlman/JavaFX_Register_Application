@@ -1,5 +1,6 @@
 package com.github.tylerjpohlman.database.register.controller_classes;
 
+import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 import com.github.tylerjpohlman.database.register.helper_classes.Item;
 import com.github.tylerjpohlman.database.register.helper_classes.Member;
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
@@ -11,11 +12,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class MainController extends ControllerMethods {
-    private String registerNum;
+    private int registerNum;
 
     @FXML
     private Label addressLabel;
@@ -36,7 +36,7 @@ public class MainController extends ControllerMethods {
      * Sets the register number used in controller class.
      * @param registerNum a String
      */
-    protected void setRegisterNum(String registerNum) {
+    protected void setRegisterNum(int registerNum) {
         this.registerNum = registerNum;
     }
 
@@ -44,21 +44,14 @@ public class MainController extends ControllerMethods {
      * Sets the address Label in the main view of the JavaFX program.
      */
     public void setAddressLabel() {
-        //grabs the address using the registerID
-        //NOTE: This is incredibly sloppy! I wasn't sure how to grab the result of a function, so I turned
-        // storeAddressLookupFromRegister into a procedure and grabbed the address this way
+        //used to access SQL methods
+        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
+
         try {
-            PreparedStatement ps = connection.prepareStatement("CALL storeAddressLookupFromRegister(?)");
-            ps.setString(1, registerNum);
-            String addressLookup = "Call storeAddressLookupFromRegister(" + registerNum + ")";
-            ps = connection.prepareStatement(addressLookup);
-            //stores the address in the result set
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                addressLabel.setText(rs.getString(1));
-            }
+            String address = jdbcUserDAOImpl.getAddressFromConnection(connection, registerNum);
+            addressLabel.setText(address);
         } catch (SQLException e) {
-            addressLabel.setText("ERROR: Unable to find address");
+            addressLabel.setText("Unable to obtain address from server!");
         }
     }
 
@@ -80,7 +73,10 @@ public class MainController extends ControllerMethods {
      * @param event an ActionEvent of type "button click"
      */
     public void addItemOnClick(ActionEvent event) {
-        //reset the error label
+        //used to access SQL methods
+        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
+
+        //resets the error label
         errorLabel.setText("");
 
         //checks if there's not any text
@@ -90,39 +86,40 @@ public class MainController extends ControllerMethods {
         }
 
         //checks if connection is closed
-        if(isClosed(connection)) {
+        if(jdbcUserDAOImpl.isConnectionNotReachable(connection)) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
             return;
         }
 
-        //elements of the Item to grab
-        String upc = itemUPCTextField.getText();
-        String name = null;
-        double price = 0;
-        double discount = 0;
 
+        //grabs upc and checks if it's only numeric values
+        long upc;
+        try {
+            String upcString = itemUPCTextField.getText();
+            upc = Long.parseLong(itemUPCTextField.getText());
+        } catch (NumberFormatException e) {
+            errorLabel.setText("Type in only a 12 digit numeric value!");
+            itemUPCTextField.clear();
+            return;
+        }
+
+        //Item object
+        Item item;
 
         try {
-            String itemUPCLookup = "Call itemUPCLookup('" + upc + "')";
-            ps = connection.prepareStatement(itemUPCLookup);
-            //stores the address in the result set
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                name = rs.getString(1);
-                price = rs.getDouble(2);
-                discount = rs.getDouble(3);
-            }
-
-            //creates a new Item given the grabbed attributes
-            addedItemsList.getItems().add(new Item(upc, name, price, discount));
-
+            item = jdbcUserDAOImpl.getItemFromUPC(connection, upc);
+        } catch (SQLException e) {
+            errorLabel.setText("Unable to find item!");
+            //blank out the upc text field
+            itemUPCTextField.clear();
+            return;
+        }
 
             //blank out the upc text field
             itemUPCTextField.setText("");
+            //adds grabbed Item object and adds it to added items list
+            addedItemsList.getItems().add(item);
 
-        } catch (SQLException e) {
-            errorLabel.setText("Unable to find Item with given upc");
-        }
     }
 
 
@@ -157,85 +154,30 @@ public class MainController extends ControllerMethods {
             errorLabel.setText("Cannot finalize a transaction with no items!");
             return;
         }
-        int receiptNumber = 0;
-        double amountDue = 0, stateTax = 0;
-        String createReceipt;
 
-        //if there is no provided membership
-        if (member == null) {
-
-            createReceipt = "CALL createReceipt(" + registerNum + ", null)";
-        }
-        //a membership was provided
-        else {
-            createReceipt = "CALL createReceipt('" + registerNum + "', '" + member.getAccountNumber() + "')";
-        }
+        //used to access SQL methods
+        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
 
         //checks if connection is closed
-        if(isClosed(connection)) {
+        if(jdbcUserDAOImpl.isConnectionNotReachable(connection)) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
             return;
         }
-        
+
+        int receiptNumber = 0;
+        double amountDue = 0.0;
+
         try {
-            ps = connection.prepareStatement(createReceipt);
-            //grabs the receipt number that was created
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                receiptNumber = Integer.parseInt(rs.getString(1));
-            }
-            //unlikely to throw an error, so just try again if there's an issue
+            receiptNumber = jdbcUserDAOImpl.createReceipt(connection, member, registerNum);
+            amountDue = jdbcUserDAOImpl.finalizeReceipt(connection, addedItemsList.getItems(), receiptNumber, member);
+
+        //error is unlikely to be thrown if connection was already check, so just click the button again
         } catch (SQLException e) {
             errorLabel.setText("Please try again...");
             return;
         }
 
         try {
-            //adds all the items to the receipt_details table
-            for (int i = 0; i < addedItemsList.getItems().size(); i++) {
-                String addItem = "CALL addItemToReceipt('" + addedItemsList.getItems().get(i).getUpc() + "', "
-                        + receiptNumber + ")";
-                ps = connection.prepareStatement(addItem);
-                ps.execute();
-            }
-            //highly unlikely that, considering everything else worked, this would too...
-            //so this is here for debugging purposes
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        //SHOULD PUT LOGIC ON SERVER SIDE!!!
-        for (int i = 0; i < addedItemsList.getItems().size(); i++) {
-
-            double itemAmount = addedItemsList.getItems().get(i).getPrice();
-
-            double discount = 0.0;
-            //only grabs the discount if there's a given member
-            if (member != null) {
-                discount = addedItemsList.getItems().get(i).getDiscount();
-            }
-
-            double discountedItem = itemAmount * (1 - discount);
-
-            //adds that item price to the grand total
-            amountDue += discountedItem;
-        }
-
-        //SHOULD PUT LOGIC ON SERVER SIDE!!!
-        try {
-            String getStateTax = "CALL getStateTax(" + receiptNumber + ")";
-
-            ps = connection.prepareStatement(getStateTax);
-            //stores the address in the result set
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                stateTax = Double.parseDouble(rs.getString(1));
-            }
-
-            //sets the amount due including state tax
-            amountDue = amountDue * (1 + stateTax);
-
             //considering all goes well, goes on to the final scene to get the amount paid and amount due
             PayController payController = (PayController)goToNextWindow(payFXMLFile, event);
             payController.setConnection(connection);
@@ -245,11 +187,6 @@ public class MainController extends ControllerMethods {
 
         } catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
-        }
-        //highly unlikely that, considering everything else worked, this would too...
-        //so this is here for debugging purposes
-        catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 }

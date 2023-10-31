@@ -2,6 +2,7 @@ package com.github.tylerjpohlman.database.register.controller_classes;
 
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
 import com.github.tylerjpohlman.database.register.helper_classes.Member;
+import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -13,9 +14,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public abstract class ControllerMethods {
     /**
@@ -26,36 +24,13 @@ public abstract class ControllerMethods {
      * Associated Member found in MySQL database
      */
     protected Member member = null;
-    protected PreparedStatement ps = null;
-    protected ResultSet rs = null;
 
     protected static final String mainFXMLFile = "main-view.fxml";
     protected static final String introductionFXMLFile = "introduction-view.fxml";
     protected static final String memberFXMLFile = "member-view.fxml";
     protected static final String payFXMLFile = "pay-view.fxml";
 
-    /**
-     * Checks if the current Connection object is closed.
-     * @param connection Connection object for MySQL database
-     * @return true if closed, empty, or any other errors; false if open
-     */
-    protected boolean isClosed(Connection connection) {
-        try {
-            //checks if Connection is closed
-            if(connection != null &&connection.isClosed() ) {
-                return true;
-            }
-            //if there's no connection object at all
-            else if (connection == null) {
-                return true;
-            }
-        //any other Connection errors will also return true
-        } catch (SQLException e) {
-            return true;
-        }
 
-        return false;
-    }
 
     /**
      * Sets the current window to a new window given the name of that window's FXML file.
@@ -67,8 +42,10 @@ public abstract class ControllerMethods {
      */
     protected Object goToNextWindow(String fileName, ActionEvent event) throws IOException, ClosedConnectionException {
         //checks if connection is still open
-        if(isClosed(connection)) {
-            throw new ClosedConnectionException("Connection is closed!");
+        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
+
+        if(jdbcUserDAOImpl.isConnectionNotReachable(connection)) {
+            throw new ClosedConnectionException();
         }
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fileName));
