@@ -73,6 +73,9 @@ public class MemberController extends ControllerMethods{
             mainController.setConnection(connection);
             mainController.setMember(member);
 
+            mainController.setRegisterNum(registerNumber);
+            mainController.setAddressLabel();
+
         } catch (ClosedConnectionException | IOException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel,event);
         }

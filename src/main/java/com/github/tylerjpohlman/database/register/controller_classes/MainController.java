@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class MainController extends ControllerMethods {
-    private int registerNum;
 
     @FXML
     private Label addressLabel;
@@ -33,14 +32,6 @@ public class MainController extends ControllerMethods {
     private Label errorLabel;
 
     /**
-     * Sets the register number used in controller class.
-     * @param registerNum a String
-     */
-    protected void setRegisterNum(int registerNum) {
-        this.registerNum = registerNum;
-    }
-
-    /**
      * Sets the address Label in the main view of the JavaFX program.
      */
     public void setAddressLabel() {
@@ -48,7 +39,7 @@ public class MainController extends ControllerMethods {
         JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
 
         try {
-            String address = jdbcUserDAOImpl.getAddressFromConnection(connection, registerNum);
+            String address = jdbcUserDAOImpl.getAddressFromConnection(connection, registerNumber);
             addressLabel.setText(address);
         } catch (SQLException e) {
             addressLabel.setText("Unable to obtain address from server!");
@@ -143,6 +134,7 @@ public class MainController extends ControllerMethods {
         try {
             MemberController memberController = (MemberController) goToNextWindow(memberFXMLFile, event);
             memberController.setConnection(connection);//passes Connection object
+            memberController.setRegisterNum(registerNumber);
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
@@ -173,7 +165,7 @@ public class MainController extends ControllerMethods {
         double amountDue;
 
         try {
-            receiptNumber = jdbcUserDAOImpl.createReceipt(connection, member, registerNum);
+            receiptNumber = jdbcUserDAOImpl.createReceipt(connection, member, registerNumber);
             amountDue = jdbcUserDAOImpl.getReceiptTotal(connection, addedItemsList.getItems(), receiptNumber, member);
 
         //error is unlikely to be thrown if connection was already check, so just click the button again

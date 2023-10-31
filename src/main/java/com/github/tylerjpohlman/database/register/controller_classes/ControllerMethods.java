@@ -25,6 +25,8 @@ public abstract class ControllerMethods {
      */
     protected Member member = null;
 
+    protected int registerNumber;
+
     protected static final String mainFXMLFile = "main-view.fxml";
     protected static final String introductionFXMLFile = "introduction-view.fxml";
     protected static final String memberFXMLFile = "member-view.fxml";
@@ -112,6 +114,14 @@ public abstract class ControllerMethods {
      */
     protected void setMember(Member member) {
         this.member = member;
+    }
+
+    /**
+     * Sets the register number used in controller class.
+     * @param registerNum a String
+     */
+    protected void setRegisterNum(int registerNumber) {
+        this.registerNumber = registerNumber;
     }
 
 
