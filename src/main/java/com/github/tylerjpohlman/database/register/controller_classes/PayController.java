@@ -1,5 +1,7 @@
 package com.github.tylerjpohlman.database.register.controller_classes;
 
+import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAO;
+import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
 
 import javafx.event.ActionEvent;
@@ -14,8 +16,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PayController extends ControllerMethods {
-    PreparedStatement ps;
-    ResultSet rs;
     private boolean finishedReceipt = false;
     private Integer receiptNumber;
 
@@ -64,29 +64,35 @@ public class PayController extends ControllerMethods {
             return;
         }
 
-        double amountPaid = Double.parseDouble(amountPaidTextField.getText());
-        double amountDue = Double.parseDouble(amountTotalLabel.getText());
+        double amountPaid;
+        double amountDue;
 
-        //WANT TO ADD LOGIC TO SERVER SIDE IN FUTURE!
-        if (amountPaid < amountDue) {
-            errorLabel.setText("Amount paid must be greater or equal to amount due");
+        //check for proper double formatting
+        try {
+            amountPaid = Double.parseDouble(amountPaidTextField.getText());
+            amountDue = Double.parseDouble(amountTotalLabel.getText());
+
+            //invalid input where the amount paid isn't a numeric value
+        } catch (NumberFormatException e) {
+            errorLabel.setText("Invalid input! Enter numeric values only...");
+            amountPaidTextField.clear();
             return;
         }
 
+        //used to access SQL methods
+        JdbcUserDAOImpl jdbcUserDAOImpl = new JdbcUserDAOImpl();
+
         try {
-            String finalizeReceipt = "CALL finalizeReceipt(" + receiptNumber + " ," + amountPaid + ")";
-
-            ps = connection.prepareStatement(finalizeReceipt);
-            ps.execute();
-
-            changeDueField.setText(String.format("%.2f", amountPaid - amountDue));
+            double changeDue = jdbcUserDAOImpl.finalizeReceipt(connection, amountPaid, amountDue, receiptNumber);
+            changeDueField.setText(String.valueOf(changeDue));
 
             finishedReceipt = true;
 
         }
-        //invalid input where the amount paid isn't a numeric value
-        catch (NumberFormatException e) {
-            errorLabel.setText("Invalid input! Enter numeric values only...");
+
+        catch (IllegalArgumentException e) {
+            errorLabel.setText("Amount paid must be greater or equal to amount due");
+            amountPaidTextField.clear();
         }
         //connection is closed
         catch (ClosedConnectionException e) {
@@ -94,8 +100,11 @@ public class PayController extends ControllerMethods {
         }
         //highly unlikely this will fail considering everything else succeeded up to this point
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            errorLabel.setText(e.getMessage());
+            return;
         }
+
+
     }
 
     /**

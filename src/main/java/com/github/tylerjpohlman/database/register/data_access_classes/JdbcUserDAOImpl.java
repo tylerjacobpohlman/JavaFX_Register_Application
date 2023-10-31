@@ -278,4 +278,34 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
         return member;
     }
+
+
+    /**
+     *
+     * @param connection Connection object
+     * @param amountPaid double representing amount paid for transaction
+     * @param amountDue double representing amount due for transaction
+     * @param receiptNumber long representing the receipt number
+     * @return double representing the change due--i.e., difference between the amounts
+     * @throws SQLException if error when executing statement to database
+     * @throws IllegalArgumentException if amountPaid is less than amountDue
+     */
+    public double finalizeReceipt(Connection connection, double amountPaid, double amountDue, long receiptNumber)
+            throws SQLException, IllegalArgumentException {
+        if(isConnectionNotReachable(connection)) {
+            throw new ClosedConnectionException();
+        }
+
+        //WANT TO ADD LOGIC TO SERVER SIDE IN FUTURE!
+        if (amountPaid < amountDue) {
+            throw new IllegalArgumentException("amountPaid must be greater than or equal to amountDue");
+        }
+
+        String finalizeReceipt = "CALL finalizeReceipt(" + receiptNumber + " ," + amountPaid + ")";
+
+        ps = connection.prepareStatement(finalizeReceipt);
+        ps.execute();
+
+        return Double.parseDouble(String.format("%.2f", amountPaid - amountDue));
+    }
 }
