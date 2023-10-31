@@ -2,7 +2,6 @@ package com.github.tylerjpohlman.database.register.controller_classes;
 
 import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
-import com.github.tylerjpohlman.database.register.helper_classes.Member;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -54,6 +53,13 @@ public class MemberController extends ControllerMethods{
             }
         } catch (SQLException e) {
             errorLabel.setText("Unable to find membership with provided phone number / member id.");
+
+            //resets the text fields
+            phoneNumberTextField.setText("");
+            memberIDTextField.setText("");
+            return;
+        } catch (NumberFormatException e) {
+            errorLabel.setText("Invalid phone number / member id.");
 
             //resets the text fields
             phoneNumberTextField.setText("");
