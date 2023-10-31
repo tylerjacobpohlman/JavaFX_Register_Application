@@ -3,7 +3,9 @@ package com.github.tylerjpohlman.database.register.data_access_classes;
 import com.github.tylerjpohlman.database.register.helper_classes.*;
 
 import java.sql.Connection;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.util.List;
 
 public interface JdbcUserDAO {
 
@@ -58,6 +60,37 @@ public interface JdbcUserDAO {
      * @throws SQLException if an error occurs while interacting with database
      */
     int createReceipt(Connection connection, Member member, int registerNum) throws SQLException;
+
+    /**
+     * Uses the created receipt number to add items to receipt in database.
+     * @param connection Connection object
+     * @param list List of items
+     * @param receiptNumber int representing associated receipt number
+     * @param member Member object
+     * @return double representing the amount due on the receipt
+     * @throws SQLException if any error with creating receipt in database
+     */
+    public double finalizeReceipt(Connection connection, List<Item> list, int receiptNumber, Member member) throws SQLException;
+
+    /**
+     * Returns associated Member object from search using phone number in database.
+     * @param connection Connection object
+     * @param phoneNumber long representing phone number
+     * @return associated Member object
+     * @throws SQLException if unable to find associated Member
+     */
+    public Member getMemberFromPhoneNumber(Connection connection, long phoneNumber) throws SQLException;
+
+    /**
+     * Returns associated Member object from search using account number in database.
+     * @param connection Connection object
+     * @param accountNumber long representing associated phone number
+     * @return associated Member object
+     * @throws SQLException if unable to find associated Member
+     */
+    public Member getMemberFromAccountNumber(Connection connection, long accountNumber) throws SQLException;
+
+
 
 
 

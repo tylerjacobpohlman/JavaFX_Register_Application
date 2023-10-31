@@ -1,5 +1,7 @@
 package com.github.tylerjpohlman.database.register.data_access_classes;
 
+import com.github.tylerjpohlman.database.register.controller_classes.MainController;
+import com.github.tylerjpohlman.database.register.controller_classes.MemberController;
 import com.github.tylerjpohlman.database.register.helper_classes.*;
 
 import java.sql.*;
@@ -177,6 +179,15 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         return receiptNumber;
     }
 
+    /**
+     * Uses the created receipt number to add items to receipt in database.
+     * @param connection Connection object
+     * @param list List of items
+     * @param receiptNumber int representing associated receipt number
+     * @param member Member object
+     * @return double representing the amount due on the receipt
+     * @throws SQLException if any error with creating receipt in database
+     */
     public double finalizeReceipt(Connection connection, List<Item> list, int receiptNumber, Member member)
             throws SQLException {
         double amountDue = 0.0, stateTax = 0.0;
@@ -215,6 +226,56 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         return amountDue;
     }
 
+    /**
+     * Returns associated Member object from search using phone number in database.
+     * @param connection Connection object
+     * @param phoneNumber long representing phone number
+     * @return associated Member object
+     * @throws SQLException if unable to find associated Member
+     */
+    public Member getMemberFromPhoneNumber(Connection connection, long phoneNumber) throws SQLException {
+        Member member = null;
 
+        String sqlStatement = "Call memberPhoneLookup('" + phoneNumber + "')";
 
+        ps = connection.prepareStatement(sqlStatement);
+        //stores the member in the result set
+        rs = ps.executeQuery();
+
+        while (rs.next()) {
+            long accountNumber = Long.parseLong(rs.getString(1));
+            String firstName = rs.getString(2);
+            String lastName = rs.getString(3);
+
+            member = new Member(accountNumber, firstName, lastName);
+        }
+
+        return member;
+    }
+
+    /**
+     * Returns associated Member object from search using account number in database.
+     * @param connection Connection object
+     * @param accountNumber long representing associated phone number
+     * @return associated Member object
+     * @throws SQLException if unable to find associated Member
+     */
+    public Member getMemberFromAccountNumber(Connection connection, long accountNumber) throws SQLException {
+        Member member = null;
+
+        String sqlStatement = "Call memberAccountNumberLookup(" + accountNumber + ")";
+
+        ps = connection.prepareStatement(sqlStatement);
+        //stores the member in the result set
+        rs = ps.executeQuery();
+
+        while (rs.next()) {
+            String firstName = rs.getString(1);
+            String lastName = rs.getString(2);
+
+            member = new Member(accountNumber, firstName, lastName);
+        }
+
+        return member;
+    }
 }
