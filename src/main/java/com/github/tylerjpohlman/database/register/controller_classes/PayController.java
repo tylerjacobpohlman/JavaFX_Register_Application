@@ -9,9 +9,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PayController extends ControllerMethods {
+    PreparedStatement ps;
+    ResultSet rs;
     private boolean finishedReceipt = false;
     private Integer receiptNumber;
 

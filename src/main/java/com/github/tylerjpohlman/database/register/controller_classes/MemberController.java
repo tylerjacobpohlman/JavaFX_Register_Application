@@ -9,10 +9,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
 public class MemberController extends ControllerMethods{
+    PreparedStatement ps;
+    ResultSet rs;
+
     private enum Type{
         PHONE_NUMBER,
         MEMBER_ID
