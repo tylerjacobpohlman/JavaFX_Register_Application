@@ -1,17 +1,17 @@
 package com.github.tylerjpohlman.database.register.helper_classes;
 
 public class Member {
-    private String accountNumber;
+    private long accountNumber;
     private String firstName;
     private String lastName;
 
-    public Member(String accountNumber, String firstName, String lastName) {
+    public Member(long accountNumber, String firstName, String lastName) {
         this.accountNumber = accountNumber;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public String getAccountNumber() {
+    public long getAccountNumber() {
         return accountNumber;
     }
     public String getFirstName() {
@@ -24,8 +24,9 @@ public class Member {
 
     @Override
     public String toString() {
+        String accountNumberString = String.valueOf(accountNumber);
         return firstName + ' ' + lastName + '\n' +
-                "Account Number: " + "*****" + accountNumber.substring(accountNumber.length() - 4 );
+                "Account Number: " + "*****" + accountNumberString.substring(accountNumberString.length() - 4 );
 
     }
 }
