@@ -134,7 +134,7 @@ public class MainController extends ControllerMethods {
         try {
             MemberController memberController = (MemberController) goToNextWindow(memberFXMLFile, event);
             memberController.setConnection(connection);//passes Connection object
-            memberController.setRegisterNum(registerNumber);
+            memberController.setRegisterNumber(registerNumber);
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);

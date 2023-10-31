@@ -118,9 +118,9 @@ public abstract class ControllerMethods {
 
     /**
      * Sets the register number used in controller class.
-     * @param registerNum a String
+     * @param registerNumber a String
      */
-    protected void setRegisterNum(int registerNumber) {
+    protected void setRegisterNumber(int registerNumber) {
         this.registerNumber = registerNumber;
     }
 

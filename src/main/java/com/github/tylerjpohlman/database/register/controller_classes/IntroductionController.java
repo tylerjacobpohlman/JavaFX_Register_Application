@@ -80,7 +80,7 @@ public class IntroductionController extends ControllerMethods {
         try {
             MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event);
             mainController.setConnection(connection);//passes Connection object
-            mainController.setRegisterNum(Integer.parseInt(registerNum));
+            mainController.setRegisterNumber(Integer.parseInt(registerNum));
             mainController.setAddressLabel();//executes method defined in class
         }
         catch (ClosedConnectionException e) {
