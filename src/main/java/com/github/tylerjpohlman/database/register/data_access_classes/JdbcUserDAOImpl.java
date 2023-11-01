@@ -1,7 +1,4 @@
 package com.github.tylerjpohlman.database.register.data_access_classes;
-
-import com.github.tylerjpohlman.database.register.controller_classes.MainController;
-import com.github.tylerjpohlman.database.register.controller_classes.MemberController;
 import com.github.tylerjpohlman.database.register.helper_classes.*;
 
 import java.sql.*;
@@ -15,7 +12,7 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
     /**
      * Register number used to sign in to MySQL database
      */
-    private int registerNumber;
+    private final int registerNumber;
 
     private PreparedStatement ps = null;
     private ResultSet rs = null;
@@ -43,11 +40,12 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
             else if (connection == null) {
                 return false;
             }
-            //any other Connection errors will also return true
+            //any other Connection errors will also return false
         } catch (SQLException e) {
             return false;
         }
 
+        //if all goes well, return true
         return true;
     }
 
@@ -107,21 +105,15 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         return address;
     }
 
-    /**
-     * Grabs Item information with given upc value.
-     * @param upc        long representing 12 digit upc
-     * @return Item object with associated details
-     * @throws SQLException if unable to find Item with associated UPC in database
-     */
     public Item getItemFromUPC(long upc) throws SQLException {
         String name = null;
         double price = 0.0, discount = 0.0;
 
-
-        String itemUPCLookup = "Call itemUPCLookup('" + upc + "')";
-        ps = connection.prepareStatement(itemUPCLookup);
+        ps = connection.prepareStatement("Call itemUPCLookup(?)");
+        ps.setString(1, String.valueOf(upc));
         //stores the address in the result set
         rs = ps.executeQuery();
+
         while (rs.next()) {
             name = rs.getString(1);
             price = rs.getDouble(2);
@@ -135,29 +127,34 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
     }
 
     public int createReceipt(Member member) throws SQLException {
-        String createReceipt;
+
         int receiptNumber = 0;
 
         //if there is no provided membership
         if (member == null) {
-
-            createReceipt = "CALL createReceipt(" + registerNumber + ", null)";
+            ps = connection.prepareStatement("CALL createReceipt(?, ?)");
+            ps.setInt(1, registerNumber);
+            ps.setNull(2, java.sql.Types.INTEGER);
         }
         //a membership was provided
         else {
-            createReceipt = "CALL createReceipt('" + registerNumber + "', '" + member.getAccountNumber() + "')";
+            ps = connection.prepareStatement("CALL createReceipt(?, ?)");
+            ps.setInt(1, registerNumber);
+            ps.setLong(2, member.getAccountNumber());
         }
 
-        ps = connection.prepareStatement(createReceipt);
         //grabs the receipt number that was created
+        //TURN INTO FUNCTION ON DATABASE SIDE!!!
         rs = ps.executeQuery();
         while (rs.next()) {
             receiptNumber = Integer.parseInt(rs.getString(1));
         }
 
+        ps.close();
+        rs.close();
+
         return receiptNumber;
     }
-
 
     public double getReceiptTotal(List<Item> list, int receiptNumber, Member member)
             throws SQLException {
@@ -165,8 +162,9 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
         //adds all the items to the receipt_details table
         for (int i = 0; i < list.size(); i++) {
-            String addItem = "CALL addItemToReceipt('" + list.get(i).getUpc() + "', " + receiptNumber + ")";
-            ps = connection.prepareStatement(addItem);
+            ps = connection.prepareStatement("CALL addItemToReceipt(?,?)");
+            ps.setLong(1, list.get(i).getUpc());
+            ps.setInt(2, receiptNumber);
             ps.execute();
         }
 
@@ -186,7 +184,8 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         //SHOULD PUT LOGIC ON SERVER SIDE!!!
         String getStateTax = "CALL getStateTax(" + receiptNumber + ")";
 
-        ps = connection.prepareStatement(getStateTax);
+        ps = connection.prepareStatement("CALL getStateTax(?)");
+        ps.setInt(1, receiptNumber);
         //stores the address in the result set
         rs = ps.executeQuery();
         while (rs.next()) {
@@ -194,24 +193,22 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         }
         //sets the amount due including state tax
         amountDue = amountDue * (1 + stateTax);
+
+        ps.close();
+        rs.close();
+
         return amountDue;
     }
 
-    /**
-     * Returns associated Member object from search using phone number in database.
-     * @param phoneNumber long representing phone number
-     * @return associated Member object
-     * @throws SQLException if unable to find associated Member
-     */
     public Member getMemberFromPhoneNumber(long phoneNumber) throws SQLException {
         Member member = null;
 
-        String sqlStatement = "Call memberPhoneLookup('" + phoneNumber + "')";
-
-        ps = connection.prepareStatement(sqlStatement);
+        ps = connection.prepareStatement("Call memberPhoneLookup(?)");
+        ps.setLong(1, phoneNumber);
         //stores the member in the result set
         rs = ps.executeQuery();
 
+        //ALSO NEED TO CHANGE TO FUNCTION ON SERVER SIDE
         while (rs.next()) {
             long accountNumber = Long.parseLong(rs.getString(1));
             String firstName = rs.getString(2);
@@ -220,30 +217,30 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
             member = new Member(accountNumber, firstName, lastName);
         }
 
+        ps.close();
+        rs.close();
+
         return member;
     }
 
-    /**
-     * Returns associated Member object from search using account number in database.
-     * @param accountNumber long representing associated phone number
-     * @return associated Member object
-     * @throws SQLException if unable to find associated Member
-     */
     public Member getMemberFromAccountNumber(long accountNumber) throws SQLException {
         Member member = null;
 
-        String sqlStatement = "Call memberAccountNumberLookup(" + accountNumber + ")";
-
-        ps = connection.prepareStatement(sqlStatement);
+        ps = connection.prepareStatement("Call memberAccountNumberLookup(?)");
+        ps.setLong(1, accountNumber);
         //stores the member in the result set
         rs = ps.executeQuery();
 
+        //CHANGE TO FUNCTION ON SERVER SIDE
         while (rs.next()) {
             String firstName = rs.getString(1);
             String lastName = rs.getString(2);
 
             member = new Member(accountNumber, firstName, lastName);
         }
+
+        ps.close();
+        rs.close();
 
         return member;
     }
@@ -259,15 +256,15 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
             throw new IllegalArgumentException("amountPaid must be greater than or equal to amountDue");
         }
 
-        String finalizeReceipt = "CALL finalizeReceipt(" + receiptNumber + " ," + amountPaid + ")";
-
-        ps = connection.prepareStatement(finalizeReceipt);
+        ps = connection.prepareStatement("CALL finalizeReceipt(?,?)");
+        ps.setLong(1, receiptNumber);
+        ps.setDouble(2, amountPaid);
         ps.execute();
 
-        return Double.parseDouble(String.format("%.2f", amountPaid - amountDue));
-    }
+        ps.close();
+        rs.close();
 
-    public int getRegisterNumber() {
-        return registerNumber;
+        //ADD ROUNDING TO SERVER SIDE!
+        return Double.parseDouble(String.format("%.2f", amountPaid - amountDue));
     }
 }

@@ -2,8 +2,6 @@ package com.github.tylerjpohlman.database.register.data_access_classes;
 
 import com.github.tylerjpohlman.database.register.helper_classes.*;
 
-import java.sql.Connection;
-import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -66,7 +64,6 @@ public interface JdbcUserDAO {
 
     /**
      * Returns associated Member object from search using phone number in database.
-     * @param connection Connection object
      * @param phoneNumber long representing phone number
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
@@ -75,7 +72,6 @@ public interface JdbcUserDAO {
 
     /**
      * Returns associated Member object from search using account number in database.
-     * @param connection Connection object
      * @param accountNumber long representing associated phone number
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
