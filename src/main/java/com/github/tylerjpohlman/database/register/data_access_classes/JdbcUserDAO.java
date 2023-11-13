@@ -33,9 +33,10 @@ public interface JdbcUserDAO {
     /**
      * Gets the associated store address from the register login details.
      * @return String for concatenation of database's associated address
-     * @throws SQLException if unable to get address from database
+     * @throws InvalidRegisterException if unable to get address from database using register id
+     * @throws SQLException if any other error when contacting the database occurs
      */
-    String getAddressFromConnection() throws SQLException;
+    String getAddressFromConnection() throws InvalidRegisterException, SQLException;
 
     /**
      * Grabs Item information with given upc value.
@@ -79,8 +80,7 @@ public interface JdbcUserDAO {
     public Member getMemberFromAccountNumber(long accountNumber) throws SQLException;
 
     /**
-     *
-     * @param connection Connection object
+     * Finalizes the receipt in the database.
      * @param amountPaid double representing amount paid for transaction
      * @param amountDue double representing amount due for transaction
      * @param receiptNumber long representing the receipt number
