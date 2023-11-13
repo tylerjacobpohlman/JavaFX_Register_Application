@@ -79,7 +79,7 @@ public class IntroductionController extends ControllerMethods {
             errorLabel.setText("Error: Invalid register number!");
             return;
         } catch (SQLException e) {
-            errorLabel.setText("Error: " + e.getMessage());
+            errorLabel.setText("Unknown error: " + e.getMessage());
             return;
         }
 
