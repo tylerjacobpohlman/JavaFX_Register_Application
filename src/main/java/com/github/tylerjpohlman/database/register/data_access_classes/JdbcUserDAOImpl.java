@@ -50,7 +50,8 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
     }
 
     public void setConnectionFromLogin(String url, String username, String password, int registerNumber)
-            throws SQLException {
+            throws DriverNotFoundException, ServerConnectionException, InvalidCredentialsException,
+            InvalidRegisterException, SQLException {
         try {
             //tries to establish a connection to the database
             connection = DriverManager.getConnection(url, username, password);
@@ -67,40 +68,52 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
                 //if the driver isn't downloaded or defined in the url
                 case "08001":
                     throw new DriverNotFoundException();
-                    //if there's issue contacting the server, a database isn't selected, or the server cannot be found at all
+                //if there's issue contacting the server, a database isn't selected, or the server cannot be found at all
                 case "08S01", "3D000":
                 case null:
                     throw new ServerConnectionException();
-                    //if either the username and/or password is incorrect
+                //if either the username and/or password is incorrect
                 case "28000":
                     throw new InvalidCredentialsException();
-                    //error defined in database: "no such register_id and/or cashier_id exists"
-                    //basically, this error is invoked when an invalid register number is given
-                case "45000":
+                //error defined in database procedure
+                //invoked when an invalid register_id is given
+                case "45001":
                     throw new InvalidRegisterException();
+                //error defined in database procedure
+                //basically, this error is invoked when an invalid cashier number is given
+                //VERY UNLIKELY TO BE THROWN IF LOGIN CREDENTIALS WORKED
+                case "45000":
+                    throw new InvalidCredentialsException();
                 default:
                     throw new SQLException(e);
             }
         }
     }
 
-    public String getAddressFromConnection() throws SQLException {
+    public String getAddressFromConnection() throws InvalidRegisterException, SQLException {
         String address = null;
 
-        //grabs the address using the registerID
-        //NOTE: This is incredibly sloppy! I wasn't sure how to grab the result of a function, so I turned
-        // storeAddressLookupFromRegister into a procedure and grabbed the address this way
-        ps = connection.prepareStatement("CALL storeAddressLookupFromRegister(?)");
-        ps.setInt(1, registerNumber);
-        //stores the address in the result set
-        ResultSet rs = ps.executeQuery();
+        try {
+            //grabs the address using the registerID
+            //NOTE: This is incredibly sloppy! I wasn't sure how to grab the result of a function, so I turned
+            // storeAddressLookupFromRegister into a procedure and grabbed the address this way
+            ps = connection.prepareStatement("SELECT storeAddressLookupFromRegister(?)");
+            ps.setInt(1, registerNumber);
+            //stores the address in the result set
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            address = rs.getString(1);
+            while (rs.next()) {
+                address = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            //invalid register id given
+            if(e.getSQLState().equals("45001")) {
+                throw new InvalidRegisterException();
+            //otherwise, rethrow the SQLException
+            } else {
+                throw e;
+            }
         }
-
-        ps.close();
-        rs.close();
 
         return address;
     }
