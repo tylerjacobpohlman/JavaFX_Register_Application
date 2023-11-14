@@ -64,6 +64,9 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
         } catch (SQLException e) {
             String errorCode = e.getSQLState();
+
+            connection.close();
+
             switch (errorCode) {
                 //if the driver isn't downloaded or defined in the url
                 case "08001":
@@ -100,7 +103,7 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
             ps = connection.prepareStatement("SELECT storeAddressLookupFromRegister(?)");
             ps.setInt(1, registerNumber);
             //stores the address in the result set
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
 
             while (rs.next()) {
                 address = rs.getString(1);
@@ -122,8 +125,8 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         String name = null;
         double price = 0.0, discount = 0.0;
 
-        ps = connection.prepareStatement("Call itemUPCLookup(?)");
-        ps.setString(1, String.valueOf(upc));
+        ps = connection.prepareStatement("CALL itemUPCLookup(?)");
+        ps.setLong(1, upc);
         //stores the address in the result set
         rs = ps.executeQuery();
 
@@ -157,7 +160,6 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         }
 
         //grabs the receipt number that was created
-        //TURN INTO FUNCTION ON DATABASE SIDE!!!
         rs = ps.executeQuery();
         while (rs.next()) {
             receiptNumber = Integer.parseInt(rs.getString(1));
@@ -171,41 +173,30 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
     public double getReceiptTotal(List<Item> list, int receiptNumber, Member member)
             throws SQLException {
-        double amountDue = 0.0, stateTax = 0.0;
+        double amountDue = 0.0;
 
         //adds all the items to the receipt_details table
-        for (int i = 0; i < list.size(); i++) {
+        for (Item item : list) {
             ps = connection.prepareStatement("CALL addItemToReceipt(?,?)");
-            ps.setLong(1, list.get(i).getUpc());
+            ps.setLong(1, item.getUpc());
             ps.setInt(2, receiptNumber);
             ps.execute();
         }
 
-        //SHOULD PUT LOGIC ON SERVER SIDE!!!
-        for (int i = 0; i < list.size(); i++) {
-            double itemAmount = list.get(i).getPrice();
-            double discount = 0.0;
-            //only grabs the discount if there's a given member
-            if (member != null) {
-                discount = list.get(i).getDiscount();
-            }
-            double discountedItem = itemAmount * (1 - discount);
-            //adds that item price to the grand total
-            amountDue += discountedItem;
+        if (member == null) {
+            ps = connection.prepareStatement("SELECT getReceiptTotal(?,?)");
+            ps.setInt(1, receiptNumber);
+            ps.setNull(2, java.sql.Types.INTEGER);
         }
-
-        //SHOULD PUT LOGIC ON SERVER SIDE!!!
-        String getStateTax = "CALL getStateTax(" + receiptNumber + ")";
-
-        ps = connection.prepareStatement("CALL getStateTax(?)");
-        ps.setInt(1, receiptNumber);
-        //stores the address in the result set
+        else {
+            ps = connection.prepareStatement("SELECT getReceiptTotal(?,?)");
+            ps.setInt(1, receiptNumber);
+            ps.setLong(2, member.getAccountNumber());
+        }
         rs = ps.executeQuery();
-        while (rs.next()) {
-            stateTax = Double.parseDouble(rs.getString(1));
+        while(rs.next()) {
+            amountDue = rs.getDouble(1);
         }
-        //sets the amount due including state tax
-        amountDue = amountDue * (1 + stateTax);
 
         ps.close();
         rs.close();
@@ -221,7 +212,7 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         //stores the member in the result set
         rs = ps.executeQuery();
 
-        //ALSO NEED TO CHANGE TO FUNCTION ON SERVER SIDE
+
         while (rs.next()) {
             long accountNumber = Long.parseLong(rs.getString(1));
             String firstName = rs.getString(2);
@@ -244,7 +235,6 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         //stores the member in the result set
         rs = ps.executeQuery();
 
-        //CHANGE TO FUNCTION ON SERVER SIDE
         while (rs.next()) {
             String firstName = rs.getString(1);
             String lastName = rs.getString(2);
@@ -259,14 +249,9 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
     }
 
     public double finalizeReceipt(double amountPaid, double amountDue, long receiptNumber)
-            throws SQLException, IllegalArgumentException {
+            throws SQLException {
         if(!isConnectionReachable()) {
             throw new ClosedConnectionException();
-        }
-
-        //WANT TO ADD LOGIC TO SERVER SIDE IN FUTURE!
-        if (amountPaid < amountDue) {
-            throw new IllegalArgumentException("amountPaid must be greater than or equal to amountDue");
         }
 
         ps = connection.prepareStatement("CALL finalizeReceipt(?,?)");
