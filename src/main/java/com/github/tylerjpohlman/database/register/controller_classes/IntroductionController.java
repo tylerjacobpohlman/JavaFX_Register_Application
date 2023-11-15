@@ -10,9 +10,21 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 
-
+/**
+ * {@code IntroductionController} - A controller class which extends {@code ControllerMethods}. Acts as the login layout
+ * to enter credentials applicable to accessing database. <p>
+ *
+ * This class' sole use is to grab the login information to initialize {@code jdbcUserDAO}. Upon successful
+ * initialization, the layout is changed to {@code MainController} and passes over {@code jdbcUserDAO} along with
+ * executing method {@link MainController#setAddressLabel()} in {@code MainController}.
+ *
+ * @author Tyler Pohlman
+ * @version 1.0, Date Created: 2023-11-14
+ * @lastModified 2023-11-15
+ */
 public class IntroductionController extends ControllerMethods {
 
     @FXML

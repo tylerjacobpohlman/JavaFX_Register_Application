@@ -14,6 +14,17 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * {@code ControllerMethods} - An abstract super class used primarily for the functionality between controller classes
+ * which inherit it. </p>
+ * The Super Class for all the Controller classes. This Abstract Class is primarily used to switch layouts between
+ * the controllers and associated fxml files. Likewise, it also contains the {@code jdbcUserDAO} declaration which is
+ * used by all the controllers to interface with the backend database. Any newly created controller class should extend
+ * this class. Any use of backend database should utilize {@code jdbcUserDAO}.
+ * @author Tyler Pohlman
+ * @version 1.0, Date Created: 2023-11-14
+ * @lastModified 2023-11-14
+ */
 public abstract class ControllerMethods {
 
     /**
@@ -99,7 +110,6 @@ public abstract class ControllerMethods {
                 throw new RuntimeException(ex);
             }
     }
-
 
     /**
      * Sets Member object.

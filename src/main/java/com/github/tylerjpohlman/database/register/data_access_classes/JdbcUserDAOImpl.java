@@ -4,6 +4,12 @@ import com.github.tylerjpohlman.database.register.helper_classes.*;
 import java.sql.*;
 import java.util.List;
 
+/**
+ * {@code JdbcUserDAOImpl} - Implementation of {@code JdbcUserDAO} which contains the logic for the data access object.
+ * @author Tyler Pohlman
+ * @version 1.0, Date Created: 2023-11-14
+ * @lastModified 2023-11-15
+ */
 public class JdbcUserDAOImpl implements JdbcUserDAO {
     /**
      * MySQL Connection to database using login credentials
@@ -50,8 +56,7 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
     }
 
     public void setConnectionFromLogin(String url, String username, String password, int registerNumber)
-            throws DriverNotFoundException, ServerConnectionException, InvalidCredentialsException,
-            InvalidRegisterException, SQLException {
+            throws SQLException {
         try {
             //tries to establish a connection to the database
             connection = DriverManager.getConnection(url, username, password);
@@ -88,23 +93,20 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
                 case "45000":
                     throw new InvalidCredentialsException();
                 default:
-                    throw new SQLException(e);
+                    throw e;
             }
         }
     }
 
-    public String getAddressFromConnection() throws InvalidRegisterException, SQLException {
+    public String getAddressFromConnection() throws SQLException {
         String address = null;
 
         try {
             //grabs the address using the registerID
-            //NOTE: This is incredibly sloppy! I wasn't sure how to grab the result of a function, so I turned
-            // storeAddressLookupFromRegister into a procedure and grabbed the address this way
             ps = connection.prepareStatement("SELECT storeAddressLookupFromRegister(?)");
             ps.setInt(1, registerNumber);
             //stores the address in the result set
             rs = ps.executeQuery();
-
             while (rs.next()) {
                 address = rs.getString(1);
             }
@@ -125,15 +127,26 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         String name = null;
         double price = 0.0, discount = 0.0;
 
-        ps = connection.prepareStatement("CALL itemUPCLookup(?)");
-        ps.setLong(1, upc);
-        //stores the address in the result set
-        rs = ps.executeQuery();
+        try {
+            ps = connection.prepareStatement("CALL itemUPCLookup(?)");
+            ps.setLong(1, upc);
+            //stores the address in the result set
+            rs = ps.executeQuery();
 
-        while (rs.next()) {
-            name = rs.getString(1);
-            price = rs.getDouble(2);
-            discount = rs.getDouble(3);
+            while (rs.next()) {
+                name = rs.getString(1);
+                price = rs.getDouble(2);
+                discount = rs.getDouble(3);
+            }
+        } catch (SQLException e) {
+            //invalid UPC exception defined in database
+            if(e.getSQLState().equals("45002")) {
+                throw new InvalidUPCException();
+            }
+            //otherwise, rethrow the exception
+            else {
+                throw e;
+            }
         }
 
         ps.close();

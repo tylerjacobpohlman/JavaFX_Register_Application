@@ -5,6 +5,13 @@ import com.github.tylerjpohlman.database.register.helper_classes.*;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * {@code JdbcUserDAO} - An interface which acts as the template for a data access object used to interact with the
+ * MySQL "hvs" database.
+ * @author Tyler Pohlman
+ * @version 1.0, Date Created: 2023-11-14
+ * @lastModified 2023-11-15
+ */
 public interface JdbcUserDAO {
 
     /**

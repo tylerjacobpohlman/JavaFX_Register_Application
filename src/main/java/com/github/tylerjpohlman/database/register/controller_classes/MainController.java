@@ -1,6 +1,5 @@
 package com.github.tylerjpohlman.database.register.controller_classes;
 
-import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 import com.github.tylerjpohlman.database.register.helper_classes.Item;
 import com.github.tylerjpohlman.database.register.helper_classes.Member;
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
@@ -14,6 +13,14 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 import java.sql.SQLException;
 
+/**
+ * {@code MainController} - Another controller class which extends {@code ControllerMethods}. Acts as the main menu of
+ * the program, mainly serving to add items to the given {@code ListView<Item>} and having different number of
+ * {@code Button} to go to other layouts.
+ * @author Tyler Pohlman
+ * @version 1.0, Date Created: 2023-11-14
+ * @lastModified 2023-11-15
+ */
 public class MainController extends ControllerMethods {
 
     @FXML
@@ -104,7 +111,6 @@ public class MainController extends ControllerMethods {
             //adds grabbed Item object and adds it to added items list
             addedItemsList.getItems().add(item);
     }
-
 
     /**
      * Logic when clicking 'Member Lookup' in main view.
