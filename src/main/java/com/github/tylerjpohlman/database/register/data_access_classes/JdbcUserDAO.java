@@ -6,32 +6,30 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * {@code JdbcUserDAO} - An interface which acts as the template for a data access object used to interact with the
- * MySQL "hvs" database.
+ * An interface which acts as the template for a data access object used to interact with the MySQL "hvs" database.
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-15
+ * @lastModified 2023-11-24
  */
 public interface JdbcUserDAO {
 
     /**
      * Checks if the current connection to database is attainable.
-     * @return false if closed, empty, or any other errors; true if open
+     * @return true if closed, empty, or any other errors; false if open
      */
-    boolean isConnectionReachable();
+    boolean isConnectionNotReachable();
 
     /**
      * Tries logging in using credentials and returns connection object if able to do so.
-     * @param url            String containing url to database (append 'jdbc:mysql://' to the beginning)
-     * @param username       String representing associated username
-     * @param password       String representing associated password
+     * @param url String containing url to database (append 'jdbc:mysql://' to the beginning)
+     * @param username String representing associated username
+     * @param password String representing associated password
      * @param registerNumber int register register number
-     * @return Connection which is logged into database
-     * @throws DriverNotFoundException     if not suitable jdbc driver is found in program
-     * @throws ServerConnectionException   if server-related issue: issues contacting, no database selected, no server found
+     * @throws DriverNotFoundException if not suitable jdbc driver is found in program
+     * @throws ServerConnectionException if server-related issue: issues contacting, no database selected, no server found
      * @throws InvalidCredentialsException if either the username and/or password is incorrect
-     * @throws InvalidRegisterException    if the given register number is found in the database
-     * @throws SQLException                if an unknown exception occurs that is accounted for
+     * @throws InvalidRegisterException if the given register number is found in the database
+     * @throws SQLException if an unknown exception occurs that is accounted for
      */
     void setConnectionFromLogin(String url, String username, String password, int registerNumber)
             throws DriverNotFoundException, ServerConnectionException, InvalidCredentialsException,
@@ -47,28 +45,29 @@ public interface JdbcUserDAO {
 
     /**
      * Grabs Item information with given upc value.
-     * @param upc        long representing 12 digit upc
-     * @return Item object with associated details
+     * @param upc long representing 12 digit upc
+     * @return {@link Item} object with associated details
      * @throws SQLException if unable to find Item with associated UPC in database
      */
     Item getItemFromUPC(long upc) throws SQLException;
 
     /**
      * Creates a receipt column in database and returns the receipt's associated number.
-     * @param member      Member object
+     * @param member {@link Member} object
+     * @return int representing receipt number
      * @throws SQLException if an error occurs while interacting with database
      */
     int createReceipt(Member member) throws SQLException;
 
     /**
      * Uses the created receipt number to add items to receipt in database.
-     * @param list List of items
+     * @param list {@link List} of items
      * @param receiptNumber int representing associated receipt number
-     * @param member Member object
+     * @param member {@link Member} object
      * @return double representing the amount due on the receipt
      * @throws SQLException if any error with creating receipt in database
      */
-    public double getReceiptTotal(List<Item> list, int receiptNumber, Member member) throws SQLException;
+    double getReceiptTotal(List<Item> list, int receiptNumber, Member member) throws SQLException;
 
     /**
      * Returns associated Member object from search using phone number in database.
@@ -76,7 +75,7 @@ public interface JdbcUserDAO {
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
      */
-    public Member getMemberFromPhoneNumber(long phoneNumber) throws SQLException;
+    Member getMemberFromPhoneNumber(long phoneNumber) throws SQLException;
 
     /**
      * Returns associated Member object from search using account number in database.
@@ -84,7 +83,7 @@ public interface JdbcUserDAO {
      * @return associated Member object
      * @throws SQLException if unable to find associated Member
      */
-    public Member getMemberFromAccountNumber(long accountNumber) throws SQLException;
+    Member getMemberFromAccountNumber(long accountNumber) throws SQLException;
 
     /**
      * Finalizes the receipt in the database.
@@ -95,7 +94,7 @@ public interface JdbcUserDAO {
      * @throws SQLException if error when executing statement to database
      * @throws IllegalArgumentException if amountPaid is less than amountDue
      */
-    public double finalizeReceipt(double amountPaid, double amountDue, long receiptNumber)
+    double finalizeReceipt(double amountPaid, double amountDue, long receiptNumber)
             throws SQLException, IllegalArgumentException;
 
 

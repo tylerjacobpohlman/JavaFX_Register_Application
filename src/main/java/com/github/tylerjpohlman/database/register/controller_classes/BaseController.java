@@ -15,49 +15,72 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * {@code ControllerMethods} - An abstract super class used primarily for the functionality between controller classes
+ * An abstract super class used for the functionality between controller classes
  * which inherit it. </p>
  * The Super Class for all the Controller classes. This Abstract Class is primarily used to switch layouts between
- * the controllers and associated fxml files. Likewise, it also contains the {@code jdbcUserDAO} declaration which is
+ * the controllers and associated fxml files. Likewise, it also contains the {@link JdbcUserDAO} class which is
  * used by all the controllers to interface with the backend database. Any newly created controller class should extend
- * this class. Any use of backend database should utilize {@code jdbcUserDAO}.
+ * this class. Any use of backend database should utilize {@link JdbcUserDAO} class which is declared as
+ * {@link #jdbcUserDAO}.
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-14
+ * @lastModified 2023-11-24
  */
-public abstract class ControllerMethods {
+public abstract class BaseController {
 
     /**
      * Associated Member found in MySQL database
      */
     protected Member member = null;
-
     /**
      * Data Access Object used to interface with MySQL database.
      */
     protected JdbcUserDAO jdbcUserDAO = null;
+    /**
+     * file name for main view FXML file
+     */
     protected static final String mainFXMLFile = "main-view.fxml";
+    /**
+     * file name for introduction view FXML file
+     */
     protected static final String introductionFXMLFile = "introduction-view.fxml";
+    /**
+     * file name for member view FXML file
+     */
     protected static final String memberFXMLFile = "member-view.fxml";
+    /**
+     * file name for pay view FXML file
+     */
     protected static final String payFXMLFile = "pay-view.fxml";
 
 
+    /**
+     * Sets the data access object passed between controller classes.
+     * Could also implement, for example, {@code mainController.jdbcUserDAO = jdbcUserDAO}, but this allows for
+     * better readability.
+     * @param jdbcUserDAO {@link JdbcUserDAO}, the given data access object
+     */
     public void setJdbcUserDAO(JdbcUserDAO jdbcUserDAO) {
         this.jdbcUserDAO = jdbcUserDAO;
     }
 
     /**
-     * Sets the current window to a new window given the name of that window's FXML file.
+     * Sets the current window to a new window given the name of that window's FXML file. <p></p>
+     * WARNING: This method returns a generic type and requires the caller to ensure that the type of the controller in
+     * the FXML file matches the expected type.
+     * A {@link ClassCastException} will be thrown at runtime if the types do not match.
+     * <p></p>
      * @param fileName name of FXML file
-     * @param event ActionEvent most likely representing a button click
-     * @param jdbcUserDAO data access object used to interface with database
-     * @return Object representing instance of controller class
+     * @param event {@link ActionEvent} representing a button click
+     * @param jdbcUserDAO {@link JdbcUserDAO} data access object used to interface with database
+     * @return {@code <T> T} the controller of type T associated with the loaded FXML file
      * @throws IOException if error occurs when loading FXML file
-     * @throws ClosedConnectionException if Connection object is closed
+     * @throws ClosedConnectionException if there's an issue when reaching the database
      */
-    protected Object goToNextWindow(String fileName, ActionEvent event, JdbcUserDAO jdbcUserDAO) throws IOException, ClosedConnectionException {
+    protected <T> T goToNextWindow(String fileName, ActionEvent event, JdbcUserDAO jdbcUserDAO) throws IOException,
+            ClosedConnectionException {
 
-        if(!jdbcUserDAO.isConnectionReachable()) {
+        if(jdbcUserDAO.isConnectionNotReachable()) {
             throw new ClosedConnectionException();
         }
 
@@ -75,7 +98,7 @@ public abstract class ControllerMethods {
 
     /**
      * Sets the current window to the introduction window.
-     * @param event ActionEvent representing button click
+     * @param event {@link ActionEvent}, representing button click
      * @throws IOException if error occurs while loading FXML file
      */
     protected void goToIntroductionWindow(ActionEvent event) throws IOException {
@@ -91,8 +114,9 @@ public abstract class ControllerMethods {
 
     /**
      * Sets the error label to text saying connection is closed and returns to login screen.
-     * @param errorLabel a Label object used for displaying errors
-     * @param event ActionEvent representing button click
+     * Used when an unforeseen error occurs which requires a "hard" restart of program.
+     * @param errorLabel {@link Label} object used for displaying errors
+     * @param event {@link ActionEvent} object representing button click
      */
     protected void setErrorLabelAndGoBackToIntroduction(Label errorLabel, ActionEvent event) {
             errorLabel.setText("Connection is closed... Now returning to login screen");
@@ -113,7 +137,9 @@ public abstract class ControllerMethods {
 
     /**
      * Sets Member object.
-     * @param member A given Member object.
+     * Could also implement, for example, {@code mainController.member = member}, but this allows for
+     * better readability.
+     * @param member {@link Member} object.
      */
     protected void setMember(Member member) {
         this.member = member;

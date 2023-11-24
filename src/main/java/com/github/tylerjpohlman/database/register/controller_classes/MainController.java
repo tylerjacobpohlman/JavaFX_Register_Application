@@ -14,14 +14,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /**
- * {@code MainController} - Another controller class which extends {@code ControllerMethods}. Acts as the main menu of
- * the program, mainly serving to add items to the given {@code ListView<Item>} and having different number of
- * {@code Button} to go to other layouts.
+ * Controller class which controls the logic behind the main menu view of the program. <p>
+ * Most notably {@link #addedItemsList} is populated with associated {@link Item} objects from the database.
+ *
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-15
+ * @lastModified 2023-11-24
  */
-public class MainController extends ControllerMethods {
+public class MainController extends BaseController {
 
     @FXML
     private Label addressLabel;
@@ -52,7 +52,7 @@ public class MainController extends ControllerMethods {
 
     /**
      * Sets the membership Label in the main view of the JavaFX program.
-     * @param member Member object
+     * @param member {@link Member} object
      */
     public void setMemberLabel(Member member) {
         if(member == null) {
@@ -65,7 +65,7 @@ public class MainController extends ControllerMethods {
 
     /**
      * Logic when clicking "ADD ITEM" in main view.
-     * @param event an ActionEvent of type "button click"
+     * @param event {@link ActionEvent} object representing button clock
      */
     public void addItemOnClick(ActionEvent event) {
 
@@ -79,7 +79,7 @@ public class MainController extends ControllerMethods {
         }
 
         //checks if connection is closed
-        if(!jdbcUserDAO.isConnectionReachable()) {
+        if(jdbcUserDAO.isConnectionNotReachable()) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
             return;
         }
@@ -114,7 +114,7 @@ public class MainController extends ControllerMethods {
 
     /**
      * Logic when clicking 'Member Lookup' in main view.
-     * @param event ActionEvent from button click in GUI
+     * @param event {@link ActionEvent} object representing button click in GUI
      * @throws IOException if unable to read associated FXML document
      */
     public void memberLookupOnCLick(ActionEvent event) throws IOException {
@@ -131,7 +131,7 @@ public class MainController extends ControllerMethods {
         }
 
         try {
-            MemberController memberController = (MemberController) goToNextWindow(memberFXMLFile, event, jdbcUserDAO);
+            MemberController memberController = goToNextWindow(memberFXMLFile, event, jdbcUserDAO);
             memberController.setJdbcUserDAO(jdbcUserDAO);//passes Connection
         }
         catch (ClosedConnectionException e) {
@@ -141,7 +141,7 @@ public class MainController extends ControllerMethods {
 
     /**
      * Logic when clicking 'FINISH AND PAY' in GUI.
-     * @param event ActionEvent representing button click
+     * @param event {@link ActionEvent} representing button click
      * @throws IOException if unable to read associated FXML file
      */
     public void finishAndPayOnClick(ActionEvent event) throws IOException {
@@ -151,7 +151,7 @@ public class MainController extends ControllerMethods {
         }
 
         //checks if connection is closed
-        if(!jdbcUserDAO.isConnectionReachable()) {
+        if(jdbcUserDAO.isConnectionNotReachable()) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
             return;
         }
@@ -171,7 +171,7 @@ public class MainController extends ControllerMethods {
 
         try {
             //considering all goes well, goes on to the final scene to get the amount paid and amount due
-            PayController payController = (PayController)goToNextWindow(payFXMLFile, event, jdbcUserDAO);
+            PayController payController = goToNextWindow(payFXMLFile, event, jdbcUserDAO);
             payController.setJdbcUserDAO(jdbcUserDAO);
             payController.setMember(member);
             payController.setReceiptNumber(receiptNumber);

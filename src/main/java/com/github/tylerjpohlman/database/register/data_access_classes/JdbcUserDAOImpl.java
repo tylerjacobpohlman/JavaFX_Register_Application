@@ -5,10 +5,10 @@ import java.sql.*;
 import java.util.List;
 
 /**
- * {@code JdbcUserDAOImpl} - Implementation of {@code JdbcUserDAO} which contains the logic for the data access object.
+ * Implementation of {@link JdbcUserDAO} which contains the logic for the data access object.
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-15
+ * @lastModified 2023-11-24
  */
 public class JdbcUserDAOImpl implements JdbcUserDAO {
     /**
@@ -36,23 +36,23 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         this.registerNumber = registerNumber;
     }
 
-    public boolean isConnectionReachable() {
+    public boolean isConnectionNotReachable() {
         try {
             //checks if Connection is closed
             if (connection != null && connection.isClosed()) {
-                return false;
+                return true;
             }
             //if there's no connection object at all
             else if (connection == null) {
-                return false;
+                return true;
             }
             //any other Connection errors will also return false
         } catch (SQLException e) {
-            return false;
+            return true;
         }
 
         //if all goes well, return true
-        return true;
+        return false;
     }
 
     public void setConnectionFromLogin(String url, String username, String password, int registerNumber)
@@ -263,19 +263,25 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
 
     public double finalizeReceipt(double amountPaid, double amountDue, long receiptNumber)
             throws SQLException {
-        if(!isConnectionReachable()) {
+        if(isConnectionNotReachable()) {
             throw new ClosedConnectionException();
         }
 
         ps = connection.prepareStatement("CALL finalizeReceipt(?,?)");
         ps.setLong(1, receiptNumber);
         ps.setDouble(2, amountPaid);
-        ps.execute();
+        rs = ps.executeQuery();
+        
+        double amountGiven = 0;
+        
+        while(rs.next()) {
+            amountGiven = rs.getDouble(1);
+        }
 
         ps.close();
         rs.close();
 
-        //ADD ROUNDING TO SERVER SIDE!
-        return Double.parseDouble(String.format("%.2f", amountPaid - amountDue));
+        
+        return amountGiven;
     }
 }

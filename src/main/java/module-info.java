@@ -10,5 +10,9 @@ module com.github.tylerjpohlman.database.register.register_application {
     opens com.github.tylerjpohlman.database.register to javafx.fxml;
     exports com.github.tylerjpohlman.database.register;
 
+    exports com.github.tylerjpohlman.database.register.data_access_classes;
+
+    exports com.github.tylerjpohlman.database.register.helper_classes;
+
 
 }

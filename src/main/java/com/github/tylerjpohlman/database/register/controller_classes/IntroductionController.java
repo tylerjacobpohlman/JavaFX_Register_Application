@@ -10,22 +10,21 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 
 /**
  * {@code IntroductionController} - A controller class which extends {@code ControllerMethods}. Acts as the login layout
  * to enter credentials applicable to accessing database. <p>
  *
- * This class' sole use is to grab the login information to initialize {@code jdbcUserDAO}. Upon successful
- * initialization, the layout is changed to {@code MainController} and passes over {@code jdbcUserDAO} along with
- * executing method {@link MainController#setAddressLabel()} in {@code MainController}.
+ * Its use to grab the login information to initialize {@code jdbcUserDAO} within {@link BaseController}.
+ * Upon successful initialization, the layout is changed to {@link MainController} and passes over {@code jdbcUserDAO}
+ * along with executing method {@link MainController#setAddressLabel()} in {@link MainController}.
  *
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-15
+ * @lastModified 2023-11-24
  */
-public class IntroductionController extends ControllerMethods {
+public class IntroductionController extends BaseController {
 
     @FXML
     private Label errorLabel;
@@ -44,7 +43,7 @@ public class IntroductionController extends ControllerMethods {
 
     /**
      * Logic for clicking enter button in GUI.
-     * @param event ActionEvent representing button click in GUI
+     * @param event {@link ActionEvent} representing button click in GUI
      * @throws IOException if unable to read associated FXML file
      */
     @FXML
@@ -96,15 +95,12 @@ public class IntroductionController extends ControllerMethods {
         }
 
         try {
-            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);//passes Connection
             mainController.setAddressLabel();//executes method defined in class
         }
         catch (ClosedConnectionException e) {
             errorLabel.setText("Connection has timed out, please try again...");
-        }
-        catch (SQLException e ) {
-            errorLabel.setText(e.getMessage());
         }
     }
 }

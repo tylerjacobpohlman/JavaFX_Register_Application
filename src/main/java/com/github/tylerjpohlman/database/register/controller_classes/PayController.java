@@ -1,23 +1,30 @@
 package com.github.tylerjpohlman.database.register.controller_classes;
 
-import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAO;
-import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PayController extends ControllerMethods {
+/**
+ * Controller class for finish and pay view. Acts at the last step in the register application in which a total is
+ * displayed and an amount is given in order to finalize the transaction within the database. <p>
+ * The methods {@link #setReceiptNumber} and {@link #setAmountTotalLabel} are called from outside the class to set these
+ * two. <p>
+ * The method {@link #finishButtonOnClick(ActionEvent)} computes the finalization in the database and returns the amount
+ * due while {@link #setStartNewTransactionButtonOnClick} allows the creation of a new transaction after the current one
+ * is finished.
+ * @author Tyler Pohlman
+ * @version 1.0, Date Created: 2023-11-14
+ * @lastModified 2023-11-24
+ */
+public class PayController extends BaseController {
     private boolean finishedReceipt = false;
-    private Integer receiptNumber;
+    private int receiptNumber;
 
     @FXML
     private Label amountTotalLabel;
@@ -30,9 +37,9 @@ public class PayController extends ControllerMethods {
 
     /**
      * Sets the receipt number to finalize the receipt.
-     * @param receiptNumber Integer representing receipt number
+     * @param receiptNumber int representing receipt number
      */
-    protected void setReceiptNumber(Integer receiptNumber) {
+    protected void setReceiptNumber(int receiptNumber) {
         this.receiptNumber = receiptNumber;
     }
 
@@ -46,7 +53,7 @@ public class PayController extends ControllerMethods {
 
     /**
      * Logic for "FINISH AND PAY" button click in GUI.
-     * @param event ActionEvent represented by Button click
+     * @param event {@link ActionEvent} object represented by Button click
      */
     public void finishButtonOnClick(ActionEvent event) {
         //resets the error label
@@ -96,22 +103,19 @@ public class PayController extends ControllerMethods {
         //highly unlikely this will fail considering everything else succeeded up to this point
         catch (SQLException e) {
             errorLabel.setText(e.getMessage());
-            return;
         }
-
-
     }
 
     /**
      * Logic for when "START NEW TRANSACTION" is clicked in GUI
-     * @param event ActionEvent representing button click
+     * @param event {@link ActionEvent} object representing button click
      * @throws IOException if unable to read associated FXML file
      */
     public void setStartNewTransactionButtonOnClick(ActionEvent event) throws IOException {
 
         try {
             //go back to main scene
-            MainController mainController = (MainController) goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);
             mainController.setAddressLabel();
         }

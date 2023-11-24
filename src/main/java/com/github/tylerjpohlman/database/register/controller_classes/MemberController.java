@@ -1,7 +1,7 @@
 package com.github.tylerjpohlman.database.register.controller_classes;
 
-import com.github.tylerjpohlman.database.register.data_access_classes.JdbcUserDAOImpl;
 import com.github.tylerjpohlman.database.register.helper_classes.ClosedConnectionException;
+import com.github.tylerjpohlman.database.register.helper_classes.Member;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,8 +11,15 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 import java.sql.SQLException;
 
-
-public class MemberController extends ControllerMethods{
+/**
+ * Controller class for the member lookup view, which tries to find an associated {@link Member} from the database. <p>
+ * Most notably, {@link #enterButtonOnClick} adds the member to {@link MainController} upon success while
+ * {@link #goBackOnClick} returns to {@link MainController}.
+ * @author Tyler Pohlman
+ * @version 1.0, Date Created: 2023-11-14
+ * @lastModified 2023-11-24
+ */
+public class MemberController extends BaseController{
     @FXML
     private Label errorLabel;
 
@@ -24,7 +31,7 @@ public class MemberController extends ControllerMethods{
 
     /**
      * Logic when clicking enter button in GUI.
-     * @param event ActionEvent representing button click
+     * @param event {@link ActionEvent} object representing button click
      */
     public void enterButtonOnClick(ActionEvent event) {
         //reset the error label
@@ -40,13 +47,15 @@ public class MemberController extends ControllerMethods{
             else if (!phoneNumberTextField.getText().isEmpty()) {
                 //grabs the phone number
                 //also removes all the misc. chars when someone types in a phone number and just keeps the digits
-                long phoneNumber = Long.parseLong(phoneNumberTextField.getText().replaceAll("[^0-9]", ""));
+                long phoneNumber =
+                        Long.parseLong(phoneNumberTextField.getText().replaceAll("[^0-9]", ""));
                 member = jdbcUserDAO.getMemberFromPhoneNumber(phoneNumber);
             }
             //if only the account number is provided
             else {
                 //grabs the account number
-                long accountNumber = Long.parseLong(memberIDTextField.getText().replaceAll("[^0-9]", ""));
+                long accountNumber =
+                        Long.parseLong(memberIDTextField.getText().replaceAll("[^0-9]", ""));
                 member = jdbcUserDAO.getMemberFromAccountNumber(accountNumber);
             }
         } catch (SQLException e) {
@@ -66,7 +75,7 @@ public class MemberController extends ControllerMethods{
         }
 
         try {
-            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);
             mainController.setMemberLabel(member);
             mainController.setMember(member);
@@ -84,7 +93,7 @@ public class MemberController extends ControllerMethods{
      */
     public void goBackOnClick(ActionEvent event) throws IOException {
         try {
-            MainController mainController = (MainController)goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);
             mainController.setAddressLabel();
         } catch (ClosedConnectionException e) {
