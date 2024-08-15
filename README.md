@@ -72,6 +72,7 @@ project. Then, simply copy and paste the following command.
    ```
 3. **Set up the database**:
 <br />
+
 Open MySQL Workbench. You should see *Local Instance 3306* under *MySQL Connections*.
 ![MySQL_Workbench_1.png](Setup%20Images/MySQL_Workbench_1.png)
 
@@ -89,4 +90,5 @@ the following.
 Finally, run the script using the left-most lighting bolt icon. The database should now be setup and running.
 ![MYSQL_Workbench_5.png](Setup%20Images/MYSQL_Workbench_5.png)
 
-3. **Setup the JavaFX application*:
+3. **Setup the JavaFX application**:
+Open IntelliJ and 
