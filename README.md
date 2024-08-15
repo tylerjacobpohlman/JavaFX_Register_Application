@@ -91,4 +91,34 @@ Finally, run the script using the left-most lighting bolt icon. The database sho
 ![MYSQL_Workbench_5.png](Setup%20Images/MYSQL_Workbench_5.png)
 
 3. **Setup the JavaFX application**:
-Open IntelliJ and 
+
+Open IntelliJ, click *open*, navigate to the project director, and open the project from there.
+![IntelliJ_1.png](Setup%20Images/IntelliJ_1.png)
+
+Click the folder icon in the left sidebar. Navigate down through the subdirectory *src* until reaching *RegisterApplication.java*.
+Double-click the *.java* file to open it.
+![IntelliJ_2.png](Setup%20Images/IntelliJ_2.png)
+
+If prompted, download a JDK version. Version 21 or later should work.
+![IntelliJ_3.png](Setup%20Images/IntelliJ_3.png)
+
+Finally, it's time to connect the driver. I would recommend using the driver provided in this project. First click on
+the gear icon in the top right and then click on *project structure*.
+![IntelliJ_4.png](Setup%20Images/IntelliJ_4.png)
+
+Above all the provided libraries, click the plus icon, click *Java*, navigate to the *lib* subdirectory, and 
+open *mysql-connector-java-8.0.30.jar*.
+![IntelliJ_5.png](Setup%20Images/IntelliJ_5.png)
+
+Click *apply* and *ok* at the bottom of the window. Now back at the initial window, click the green *run* icon at the top.
+Doing so should bring up the following screen:
+![IntelliJ_6.png](Setup%20Images/IntelliJ_6.png)
+
+All the details provided are the default login credentials. Upon pressing enter, this following screen is displayed:
+![IntelliJ_7.png](Setup%20Images/IntelliJ_7.png)
+
+4. **You're done!**:
+Play around with application! The tables *items* and *members* with the *hvs* database contain the data to test the
+application. Click through all the options and refresh the database to see what changes!
+
+
