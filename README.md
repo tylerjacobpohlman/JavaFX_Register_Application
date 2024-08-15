@@ -73,6 +73,7 @@ project. Then, simply copy and paste the following command.
 3. **Set up the database**:
 
 Open MySQL Workbench. You should see *Local Instance 3306* under *MySQL Connections*.
+
 ![MySQL_Workbench_1.png](Setup%20Images/MySQL_Workbench_1.png)
 
 Double-click on the instance and type in the root password you made at setup. Then, simply click **ok**.
