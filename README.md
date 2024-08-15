@@ -2,7 +2,7 @@
 
 ## Contact
 I am unlikely to check any messages or comments via. GitHub. Please reach out to via. email
-at [tpohlman@proton.me](tpohlman@proton.me) if there are any bugs, questions, concerns, or
+at [tpohlman@proton.me](mailto:tpohlman@proton.me) if there are any bugs, questions, concerns, or
 clarifications about the setup.
 ## Overview
 This project is a proof of concept, with a cash register program made
