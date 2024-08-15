@@ -122,6 +122,13 @@ All the details provided are the default login credentials. Upon pressing *enter
 Play around with application! The tables *items* and *members* with the *hvs* database contain the data to test the
 application. Click through all the options and refresh the database to see what changes!
 
+## Contributions
+
+This project wouldn't have become a reality without the close help of my Java Programming professor 
+[John Ostroske](https://www.linkedin.com/in/john-ostroske-1b49aa59/) and Database Systems professor 
+[Kevin Lizanich](https://www.linkedin.com/in/kevin-lizanich-86442a101/). Both went above and beyond in teaching their 
+respective courses and reviewing my codebase.
+
 
 
 
