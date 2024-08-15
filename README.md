@@ -118,7 +118,7 @@ All the details provided are the default login credentials. Upon pressing *enter
 ![IntelliJ_7.png](Setup%20Images/IntelliJ_7.png)
 
 4. **You're done!**:
-5. 
+
 Play around with application! The tables *items* and *members* with the *hvs* database contain the data to test the
 application. Click through all the options and refresh the database to see what changes!
 
