@@ -59,10 +59,6 @@ information.
 Depending on your operating system, you may or may not have Git already installed. If not, follow the 
 [official Git download link](https://git-scm.com/downloads).
 
-Finally, download the [JDBC driver](https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html). Make sure 
-to download *ojdbc11.jar* to ensure compatibility with the most current version of Java JDK. Make sure to remember where 
-this file is located as it is used in the next step.
-
 2. **Clone the repository**:
 
 Open the applicable terminal for your operating system and navigate to the desired location where you want to copy the
