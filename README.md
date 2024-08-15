@@ -43,6 +43,7 @@ operating system. I would recommend doing a quick web search if you're confused 
 
 1. **Download and install the necessary programs**:
 <br />
+
 Download and install [MySQL Sever](https://dev.mysql.com/downloads/mysql/). The latest version should be fine but, if 
 you have any capability issues, download version *9.0.1*. If you have any other issues or 
 need further clarification, read the [official MySQL Server installation guide](https://dev.mysql.com/doc/refman/9.0/en/installing.html).
