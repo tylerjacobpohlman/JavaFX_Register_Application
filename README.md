@@ -115,7 +115,7 @@ All the details provided are the default login credentials. Upon pressing *enter
 
 4. **You're done!**:
 
-Play around with application! The tables *items* and *members* with the *hvs* database contain the data to test the
+Play around with application! The tables *items* and *members* within the *hvs* database contain the data to test the
 application. Click through all the options and refresh the database to see what changes!
 
 ## Contributions
