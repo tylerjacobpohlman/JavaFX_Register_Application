@@ -2,7 +2,7 @@
 
 ## Contact
 I am unlikely to check any messages or comments via. GitHub. Please reach out to via. email
-at [tpohlman@proton.me](tpohlman@proton.me) if there's any bugs, questions, concerns, or
+at [tpohlman@proton.me](tpohlman@proton.me) if there are any bugs, questions, concerns, or
 clarifications about the setup.
 ## Overview
 This project is a proof of concept, with a cash register program made
@@ -49,11 +49,11 @@ need further clarification, read the [official MySQL Server installation guide](
 Make sure to write down the root password you create during installation!
 
 Next, download and install [MySQL Workbench](https://dev.mysql.com/downloads/workbench/). The latest version should also
-be fine, but download version *8.0.38* if there's any capability issues. Once again, if you have any other issues or
+be fine, but download version *8.0.38* if there are any capability issues. Once again, if you have any other issues or
 need further clarification, read the [official MySQL Workbench installation guide](https://dev.mysql.com/doc/workbench/en/wb-installing.html).
 <br />
 Now download and install [IntelliJ IDE](https://www.jetbrains.com/idea/download/other.html). Follow the 
-[official IntelliJ IDE installation guide](https://www.jetbrains.com/help/idea/installation-guide.html#snap) for further
+[official IntelliJ IDEA installation guide](https://www.jetbrains.com/help/idea/installation-guide.html#snap) for further
 information.
 
 Depending on your operating system, you may or may not have Git already installed. If not, follow the 
@@ -79,7 +79,7 @@ Open MySQL Workbench. You should see *Local Instance 3306* under *MySQL Connecti
 Double-click on the instance and type in the root password you made at setup. Then, simply click **ok**.
 ![MYSQL_Workbench_2.png](Setup%20Images/MYSQL_Workbench_2.png)
 
-You should now be on a screen which looks like the following:
+You should now be on a screen that looks like the following:
 ![MYSQL_Workbench_3.png](Setup%20Images/MYSQL_Workbench_3.png)
 
 Now click the folder icon in the top right corner to find an SQL script to run. Simply navigate to the cloned project
@@ -90,7 +90,7 @@ the following.
 Finally, run the script using the left-most lighting bolt icon. The database should now be setup and running.
 ![MYSQL_Workbench_5.png](Setup%20Images/MYSQL_Workbench_5.png)
 
-3. **Setup the JavaFX application**:
+3. **Set up the JavaFX application**:
 
 Open IntelliJ, click *open*, navigate to the project director, and open the project from there.
 ![IntelliJ_1.png](Setup%20Images/IntelliJ_1.png)
@@ -114,11 +114,14 @@ Click *apply* and *ok* at the bottom of the window. Now back at the initial wind
 Doing so should bring up the following screen:
 ![IntelliJ_6.png](Setup%20Images/IntelliJ_6.png)
 
-All the details provided are the default login credentials. Upon pressing enter, this following screen is displayed:
+All the details provided are the default login credentials. Upon pressing *enter*, this following screen is displayed:
 ![IntelliJ_7.png](Setup%20Images/IntelliJ_7.png)
 
 4. **You're done!**:
+5. 
 Play around with application! The tables *items* and *members* with the *hvs* database contain the data to test the
 application. Click through all the options and refresh the database to see what changes!
+
+
 
 
