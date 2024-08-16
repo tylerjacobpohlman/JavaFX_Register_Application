@@ -41,7 +41,7 @@ for running it on your machine. Other applicable IDEs can be used at your own di
 walking through the setup on macOS, so some of the instructions may differ depending on your 
 operating system. I would recommend doing a quick web search if you're confused at any of the steps.
 
-1. **Download and install the necessary programs**:
+### 1. **Download and install the necessary programs**:
 
 Download and install [MySQL Sever](https://dev.mysql.com/downloads/mysql/). The latest version should be fine but, if 
 you have any capability issues, download version *9.0.1*. If you have any other issues or 
@@ -59,14 +59,14 @@ information.
 Depending on your operating system, you may or may not have Git already installed. If not, follow the 
 [official Git download link](https://git-scm.com/downloads).
 
-2. **Clone the repository**:
+### 2. **Clone the repository**:
 
 Open the applicable terminal for your operating system and navigate to the desired location where you want to copy the
 project. Then, simply copy and paste the following command.
    ```bash 
    git clone https://github.com/tylerjacobpohlman/JavaFX_Register_Application
    ```
-3. **Set up the database**:
+### 3. **Set up the database**:
 
 Open MySQL Workbench. You should see *Local Instance 3306* under *MySQL Connections*.
 
@@ -86,7 +86,7 @@ the following.
 Finally, run the script using the left-most lighting bolt icon. The database should now be setup and running.
 ![MYSQL_Workbench_5.png](Setup%20Images/MYSQL_Workbench_5.png)
 
-3. **Set up the JavaFX application**:
+### 4. **Set up the Java application**:
 
 Open IntelliJ, click *open*, navigate to the project director, and open the project from there.
 ![IntelliJ_1.png](Setup%20Images/IntelliJ_1.png)
@@ -113,7 +113,7 @@ Doing so should bring up the following screen:
 All the details provided are the default login credentials. Upon pressing *enter*, this following screen is displayed:
 ![IntelliJ_7.png](Setup%20Images/IntelliJ_7.png)
 
-4. **You're done!**:
+### 5. **You're done!**:
 
 Play around with application! The tables *items* and *members* within the *hvs* database contain the data to test the
 application. Click through all the options and refresh the database to see what changes!
