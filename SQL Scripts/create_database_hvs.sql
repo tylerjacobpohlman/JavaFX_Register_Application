@@ -657,25 +657,25 @@ DELIMITER //
 CREATE FUNCTION storeAddressLookupFromRegister(
     given_register_id INT
 )
-RETURNS VARCHAR(150)
+RETURNS VARCHAR(250)
 DETERMINISTIC
 BEGIN
     -- create exception for invalid register_id
     DECLARE no_such_register CONDITION FOR SQLSTATE '45001';
     -- declare variable to return
-    DECLARE store_address VARCHAR(150);
+    DECLARE store_address_return VARCHAR(250);
 
     IF given_register_id NOT IN (SELECT register_id FROM registers) THEN
         SIGNAL no_such_register SET MESSAGE_TEXT = 'No such register_id exists';
     END IF;
 
-    SET store_address =
-    (
-    SELECT CONCAT(store_address, ', ', store_city, ', ', store_state, ' ', store_zip)
-    FROM stores
-    WHERE store_id = (SELECT store_id FROM registers WHERE register_id = given_register_id)
-    );
-    RETURN(store_address);
+   SET store_address_return =
+(
+SELECT CONCAT(IFNULL(store_address, ''), ', ', IFNULL(store_city, ''), ', ', IFNULL(store_state, ''), ' ', IFNULL(store_zip, ''))
+FROM stores
+WHERE store_id = (SELECT store_id FROM registers WHERE register_id = given_register_id)
+);
+    RETURN(store_address_return);
 END //
 DELIMITER ;
 -- -------------
