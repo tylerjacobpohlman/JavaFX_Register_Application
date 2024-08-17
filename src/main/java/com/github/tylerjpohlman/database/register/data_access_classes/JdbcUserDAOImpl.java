@@ -70,9 +70,8 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
         } catch (SQLException e) {
             String errorCode = e.getSQLState();
 
-            connection.close();
-
             switch (errorCode) {
+
                 //if the driver isn't downloaded or defined in the url
                 case "08001":
                     throw new DriverNotFoundException();
