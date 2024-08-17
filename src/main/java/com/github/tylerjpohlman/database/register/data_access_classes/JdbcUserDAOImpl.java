@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class JdbcUserDAOImpl implements JdbcUserDAO {
     /**
-     * MySQL Connection to database using login credentials
+     * MySQL Connection to the database using login credentials
      */
     private Connection connection = null;
     /**
@@ -24,12 +24,12 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
     private ResultSet rs = null;
 
     /**
-     * Constructor with tries logging into database and establishing connection when invoked.
+     * Constructor with tries logging into the database and establishing connection when invoked.
      * @param url String representing database url
      * @param username String representing username
      * @param password String representing password
      * @param registerNumber int representing the register number
-     * @throws SQLException if there's an error logging in to database
+     * @throws SQLException if there's an error logging in to the database
      */
     public JdbcUserDAOImpl(String url, String username, String password, int registerNumber) throws SQLException {
         setConnectionFromLogin(url, username, password, registerNumber);
@@ -138,7 +138,7 @@ public class JdbcUserDAOImpl implements JdbcUserDAO {
                 discount = rs.getDouble(3);
             }
         } catch (SQLException e) {
-            //invalid UPC exception defined in database
+            //invalid UPC exception defined in the database
             if(e.getSQLState().equals("45002")) {
                 throw new InvalidUPCException();
             }
