@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * An abstract super class used for the functionality between controller classes
+ * An abstract superclass used for the functionality between controller classes
  * which inherit it. </p>
  * The Super Class for all the Controller classes. This Abstract Class is primarily used to switch layouts between
  * the controllers and associated fxml files. Likewise, it also contains the {@link JdbcUserDAO} class which is
@@ -37,22 +37,25 @@ public abstract class BaseController {
      */
     protected JdbcUserDAO jdbcUserDAO = null;
     /**
-     * file name for main view FXML file
+     * file name for the main view FXML file
      */
     protected static final String mainFXMLFile = "main-view.fxml";
     /**
-     * file name for introduction view FXML file
+     * file name for the introduction view FXML file
      */
     protected static final String introductionFXMLFile = "introduction-view.fxml";
     /**
-     * file name for member view FXML file
+     * file name for the member view FXML file
      */
     protected static final String memberFXMLFile = "member-view.fxml";
     /**
-     * file name for pay view FXML file
+     * file name for the pay view FXML file
      */
     protected static final String payFXMLFile = "pay-view.fxml";
-
+    /**
+     * file name for the member lookup FXML file
+     */
+    protected static final String itemLookupFXMLFile = "lookup-view.fxml";
 
     /**
      * Sets the data access object passed between controller classes.
@@ -72,7 +75,7 @@ public abstract class BaseController {
      * <p></p>
      * @param fileName name of FXML file
      * @param event {@link ActionEvent} representing a button click
-     * @param jdbcUserDAO {@link JdbcUserDAO} data access object used to interface with database
+     * @param jdbcUserDAO {@link JdbcUserDAO} data access object used to interface with the database
      * @return {@code <T> T} the controller of type T associated with the loaded FXML file
      * @throws IOException if error occurs when loading FXML file
      * @throws ClosedConnectionException if there's an issue when reaching the database
@@ -86,7 +89,7 @@ public abstract class BaseController {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fileName));
         Parent root = fxmlLoader.load();//instantiates all the objects in the FXML file
-        //grab Stage object using Event object
+        //grabs the Stage object using the Event object
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
         Scene scene = new Scene(root);
@@ -104,7 +107,7 @@ public abstract class BaseController {
     protected void goToIntroductionWindow(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(introductionFXMLFile));
         Parent root = fxmlLoader.load();//instantiates all the objects in the FXML file
-        //grab Stage object using Event object
+        //grab the Stage object using the Event object
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
         Scene scene = new Scene(root);
@@ -113,8 +116,8 @@ public abstract class BaseController {
     }
 
     /**
-     * Sets the error label to text saying connection is closed and returns to login screen.
-     * Used when an unforeseen error occurs which requires a "hard" restart of program.
+     * Sets the error label to text saying connection is closed and returns to the login screen.
+     * Used when an unforeseen error occurs which requires a "hard" restart of the program.
      * @param errorLabel {@link Label} object used for displaying errors
      * @param event {@link ActionEvent} object representing button click
      */
