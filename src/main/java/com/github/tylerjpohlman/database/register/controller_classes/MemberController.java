@@ -25,12 +25,21 @@ public class MemberController extends BaseController{
      */
     public static final String memberFXMLFile = "member-view.fxml";
 
+    /**
+     * Label used to display generated errors.
+     */
     @FXML
     private Label errorLabel;
 
+    /**
+     * Text field used to input a membership id.
+     */
     @FXML
     private TextField memberIDTextField;
 
+    /**
+     * Text field used to input a phone number connected to a membership.
+     */
     @FXML
     private TextField phoneNumberTextField;
 
