@@ -22,6 +22,10 @@ import java.sql.SQLException;
  * @lastModified 2023-11-24
  */
 public class MainController extends BaseController {
+    /**
+     * file name for the main view FXML file
+     */
+    public static final String mainFXMLFile = "main-view.fxml";
 
     @FXML
     private Label addressLabel;
@@ -64,8 +68,8 @@ public class MainController extends BaseController {
     }
 
     /**
-     * Logic when clicking "ADD ITEM" in main view.
-     * @param event {@link ActionEvent} object representing button clock
+     * Logic when clicking "ADD ITEM" in the main view.
+     * @param event {@link ActionEvent} Object representing the button click.
      */
     public void addItemOnClick(ActionEvent event) {
 
@@ -108,7 +112,7 @@ public class MainController extends BaseController {
         }
             //blank out the upc text field
             itemUPCTextField.clear();
-            //adds grabbed Item object and adds it to added items list
+            //adds a grabbed Item object and adds it to the added items list
             addedItemsList.getItems().add(item);
     }
 
@@ -118,12 +122,6 @@ public class MainController extends BaseController {
      * @throws IOException if unable to read associated FXML document
      */
     public void memberLookupOnCLick(ActionEvent event) throws IOException {
-        //check if one or more items are added
-        if(!addedItemsList.getItems().isEmpty()) {
-            errorLabel.setText("Cannot input membership after adding items");
-            return;
-        }
-
         //checks for already inputted membership
         if(member != null) {
             errorLabel.setText("Membership already inputted...");
@@ -131,8 +129,7 @@ public class MainController extends BaseController {
         }
 
         try {
-            MemberController memberController = goToNextWindow(memberFXMLFile, event, jdbcUserDAO);
-            memberController.setJdbcUserDAO(jdbcUserDAO);//passes Connection
+            MemberController memberController = (MemberController) goToNextWindow(MemberController.memberFXMLFile, event, jdbcUserDAO, member);
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
@@ -142,7 +139,7 @@ public class MainController extends BaseController {
     /**
      * Logic when clicking 'FINISH AND PAY' in GUI.
      * @param event {@link ActionEvent} representing button click
-     * @throws IOException if unable to read associated FXML file
+     * @throws IOException if unable to read the associated FXML file
      */
     public void finishAndPayOnClick(ActionEvent event) throws IOException {
         if(addedItemsList.getItems().isEmpty()) {
@@ -163,7 +160,7 @@ public class MainController extends BaseController {
             receiptNumber = jdbcUserDAO.createReceipt(member);
             amountDue = jdbcUserDAO.getReceiptTotal(addedItemsList.getItems(), receiptNumber, member);
 
-        //error is unlikely to be thrown if connection was already check, so just click the button again
+        //error is unlikely to be thrown if connection was already check, so click the button again
         } catch (SQLException e) {
             errorLabel.setText(e.getMessage());
             return;
@@ -171,9 +168,8 @@ public class MainController extends BaseController {
 
         try {
             //considering all goes well, goes on to the final scene to get the amount paid and amount due
-            PayController payController = goToNextWindow(payFXMLFile, event, jdbcUserDAO);
-            payController.setJdbcUserDAO(jdbcUserDAO);
-            payController.setMember(member);
+            PayController payController =
+                    (PayController) goToNextWindow(PayController.payFXMLFile, event, jdbcUserDAO, member);
             payController.setReceiptNumber(receiptNumber);
             payController.setAmountTotalLabel(amountDue);
 
