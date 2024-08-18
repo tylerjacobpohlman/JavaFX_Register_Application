@@ -33,12 +33,21 @@ public class MainController extends BaseController {
     @FXML
     private Label membershipLabel;
 
+    /**
+     * List View of Items added to the current shopping session.
+     */
     @FXML
     private ListView<Item> addedItemsList;
 
+    /**
+     * Text Field used to type in an item's upc.
+     */
     @FXML
     private TextField itemUPCTextField;
 
+    /**
+     * Label used to display generated errors.
+     */
     @FXML
     private Label errorLabel;
 
@@ -129,7 +138,8 @@ public class MainController extends BaseController {
         }
 
         try {
-            MemberController memberController = (MemberController) goToNextWindow(MemberController.memberFXMLFile, event, jdbcUserDAO, member);
+            MemberController memberController =
+                    (MemberController) goToNextWindow(MemberController.memberFXMLFile, event, jdbcUserDAO, member);
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
