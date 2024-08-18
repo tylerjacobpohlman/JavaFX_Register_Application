@@ -89,10 +89,9 @@ public class MemberController extends BaseController{
         }
 
         try {
-            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
-            mainController.setJdbcUserDAO(jdbcUserDAO);
+            MainController mainController =
+                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
             mainController.setMemberLabel(member);
-            mainController.setMember(member);
             mainController.setAddressLabel();
 
         } catch (ClosedConnectionException | IOException e) {
@@ -107,8 +106,8 @@ public class MemberController extends BaseController{
      */
     public void goBackOnClick(ActionEvent event) throws IOException {
         try {
-            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
-            mainController.setJdbcUserDAO(jdbcUserDAO);
+            MainController mainController =
+                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
             mainController.setAddressLabel();
         } catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);

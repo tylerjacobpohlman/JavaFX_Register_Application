@@ -142,8 +142,8 @@ public class PayController extends BaseController {
 
         try {
             //go back to the main scene
-            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
-            mainController.setJdbcUserDAO(jdbcUserDAO);
+            MainController mainController =
+                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
             mainController.setAddressLabel();
         }
         catch (ClosedConnectionException e) {

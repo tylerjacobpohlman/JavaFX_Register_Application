@@ -113,8 +113,8 @@ public class IntroductionController extends BaseController {
         }
 
         try {
-            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
-            mainController.setJdbcUserDAO(jdbcUserDAO);//passes Connection
+            MainController mainController =
+                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
             mainController.setAddressLabel();//executes method defined in class
         }
         catch (ClosedConnectionException e) {

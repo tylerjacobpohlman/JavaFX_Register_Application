@@ -67,11 +67,12 @@ public abstract class BaseController {
      * @param fileName name of FXML file
      * @param event {@link ActionEvent} representing a button click
      * @param jdbcUserDAO {@link JdbcUserDAO} data access object used to interface with the database
+     * @param member {@link Member} associated membership information
      * @return {@code <T> T} the controller of type T associated with the loaded FXML file
      * @throws IOException if error occurs when loading FXML file
      * @throws ClosedConnectionException if there's an issue when reaching the database
      */
-    protected <T> T goToNextWindow(String fileName, ActionEvent event, JdbcUserDAO jdbcUserDAO) throws IOException,
+    protected BaseController goToNextWindow(String fileName, ActionEvent event, JdbcUserDAO jdbcUserDAO, Member member) throws IOException,
             ClosedConnectionException {
 
         if(jdbcUserDAO.isConnectionNotReachable()) {
@@ -87,7 +88,10 @@ public abstract class BaseController {
         stage.setScene(scene);
         stage.show();
 
-        return fxmlLoader.getController();
+        BaseController baseController = fxmlLoader.getController();//grabs associated controller generated above
+        baseController.setJdbcUserDAO(jdbcUserDAO);//passes jdbcUserDAO instance to controller
+        baseController.setMember(member);//passes membership information to controller
+        return baseController;
     }
 
     /**
