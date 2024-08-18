@@ -30,18 +30,33 @@ public class IntroductionController extends BaseController {
      */
     public static final String introductionFXMLFile = "introduction-view.fxml";
 
+    /**
+     * Label used to display generated errors.
+     */
     @FXML
     private Label errorLabel;
 
+    /**
+     * Text field used to input the url to the database.
+     */
     @FXML
     private TextField urlTextField;
 
+    /**
+     * Text field used to input the associated username for logging into the database.
+     */
     @FXML
     private TextField usernameTextField;
 
+    /**
+     * Text field used to input the associated password for logging into the database.
+     */
     @FXML
     private TextField passwordTextField;
 
+    /**
+     * Text field used to input the register number. May be hard coded in the future for obvious reasons.
+     */
     @FXML
     private TextField registerNumTextField;
 
