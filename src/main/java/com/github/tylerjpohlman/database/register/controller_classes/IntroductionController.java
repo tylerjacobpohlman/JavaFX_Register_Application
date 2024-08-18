@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 /**
  * {@code IntroductionController} - A controller class which extends {@code ControllerMethods}. Acts as the login layout
- * to enter credentials applicable to accessing database. <p>
+ * to enter credentials applicable to the accessing database. <p>
  *
  * Its use to grab the login information to initialize {@code jdbcUserDAO} within {@link BaseController}.
  * Upon successful initialization, the layout is changed to {@link MainController} and passes over {@code jdbcUserDAO}
@@ -44,9 +44,8 @@ public class IntroductionController extends BaseController {
     /**
      * Logic for clicking enter button in GUI.
      * @param event {@link ActionEvent} representing button click in GUI
-     * @throws IOException if unable to read associated FXML file
+     * @throws IOException if unable to read the associated FXML file
      */
-    @FXML
     public void enterButtonOnClick(ActionEvent event) throws IOException {
         //resets error label
         errorLabel.setText("");
@@ -72,7 +71,7 @@ public class IntroductionController extends BaseController {
             return;
         }
 
-        //add driver part to url if it isn't empty
+        //add driver part to the url if it isn't empty
         url = "jdbc:mysql://" + url;
 
         try {
