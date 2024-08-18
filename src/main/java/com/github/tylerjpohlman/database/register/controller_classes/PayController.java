@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 /**
  * Controller class for finish and pay view. Acts at the last step in the register application in which a total is
- * displayed and an amount is given in order to finalize the transaction within the database. <p>
+ * displayed and an amount is given to finalize the transaction within the database. <p>
  * The methods {@link #setReceiptNumber} and {@link #setAmountTotalLabel} are called from outside the class to set these
  * two. <p>
  * The method {@link #finishButtonOnClick(ActionEvent)} computes the finalization in the database and returns the amount
@@ -23,6 +23,11 @@ import java.sql.SQLException;
  * @lastModified 2023-11-24
  */
 public class PayController extends BaseController {
+    /**
+     * file name for the pay view FXML file
+     */
+    public static final String payFXMLFile = "pay-view.fxml";
+
     private boolean finishedReceipt = false;
     private int receiptNumber;
 
@@ -45,7 +50,7 @@ public class PayController extends BaseController {
 
     /**
      * Sets the total amount as a double to two decimal places.
-     * @param amount double representing total of receipt.
+     * @param amount double representing the total for the receipt.
      */
     public void setAmountTotalLabel(double amount) {
         amountTotalLabel.setText(String.format("%.2f", amount));
@@ -107,15 +112,15 @@ public class PayController extends BaseController {
     }
 
     /**
-     * Logic for when "START NEW TRANSACTION" is clicked in GUI
+     * Logic for when "START NEW TRANSACTION" is clicked in the GUI
      * @param event {@link ActionEvent} object representing button click
-     * @throws IOException if unable to read associated FXML file
+     * @throws IOException if unable to read the associated FXML file
      */
     public void setStartNewTransactionButtonOnClick(ActionEvent event) throws IOException {
 
         try {
-            //go back to main scene
-            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            //go back to the main scene
+            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);
             mainController.setAddressLabel();
         }

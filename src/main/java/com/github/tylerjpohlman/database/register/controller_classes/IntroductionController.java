@@ -25,6 +25,10 @@ import java.sql.SQLException;
  * @lastModified 2023-11-24
  */
 public class IntroductionController extends BaseController {
+    /**
+     * file name for the introduction view FXML file
+     */
+    public static final String introductionFXMLFile = "introduction-view.fxml";
 
     @FXML
     private Label errorLabel;
@@ -94,7 +98,7 @@ public class IntroductionController extends BaseController {
         }
 
         try {
-            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);//passes Connection
             mainController.setAddressLabel();//executes method defined in class
         }

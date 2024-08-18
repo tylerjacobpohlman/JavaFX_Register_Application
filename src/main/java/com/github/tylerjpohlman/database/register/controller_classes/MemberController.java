@@ -20,6 +20,11 @@ import java.sql.SQLException;
  * @lastModified 2023-11-24
  */
 public class MemberController extends BaseController{
+    /**
+     * file name for the member view FXML file
+     */
+    public static final String memberFXMLFile = "member-view.fxml";
+
     @FXML
     private Label errorLabel;
 
@@ -75,7 +80,7 @@ public class MemberController extends BaseController{
         }
 
         try {
-            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);
             mainController.setMemberLabel(member);
             mainController.setMember(member);
@@ -93,7 +98,7 @@ public class MemberController extends BaseController{
      */
     public void goBackOnClick(ActionEvent event) throws IOException {
         try {
-            MainController mainController = goToNextWindow(mainFXMLFile, event, jdbcUserDAO);
+            MainController mainController = goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO);
             mainController.setJdbcUserDAO(jdbcUserDAO);
             mainController.setAddressLabel();
         } catch (ClosedConnectionException e) {
