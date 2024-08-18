@@ -28,15 +28,37 @@ public class PayController extends BaseController {
      */
     public static final String payFXMLFile = "pay-view.fxml";
 
+    /**
+     * Used to determine whether a receipt has been processed.
+     */
     private boolean finishedReceipt = false;
+
+    /**
+     * Stores the receipt number generated in the database.
+     */
     private int receiptNumber;
 
+    /**
+     * Label which shows the amount due for the order.
+     */
     @FXML
     private Label amountTotalLabel;
+
+    /**
+     * Text field used to input the amount of money applied to the order.
+     */
     @FXML
     private TextField amountPaidTextField;
+
+    /**
+     * Label used to display generated errors.
+     */
     @FXML
     private Label errorLabel;
+
+    /**
+     * The Label used to display the amount of due after the amount paid has been given.
+     */
     @FXML
     private Label changeDueField;
 
