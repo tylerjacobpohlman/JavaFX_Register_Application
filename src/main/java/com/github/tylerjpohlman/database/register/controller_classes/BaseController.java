@@ -49,6 +49,16 @@ public abstract class BaseController {
     }
 
     /**
+     * Sets Member object.
+     * Could also implement, for example, {@code mainController.member = member}, but this allows for
+     * better readability.
+     * @param member {@link Member} object.
+     */
+    protected void setMember(Member member) {
+        this.member = member;
+    }
+
+    /**
      * Sets the current window to a new window given the name of that window's FXML file. <p></p>
      * WARNING: This method returns a generic type and requires the caller to ensure that the type of the controller in
      * the FXML file matches the expected type.
@@ -118,18 +128,4 @@ public abstract class BaseController {
                 throw new RuntimeException(ex);
             }
     }
-
-    /**
-     * Sets Member object.
-     * Could also implement, for example, {@code mainController.member = member}, but this allows for
-     * better readability.
-     * @param member {@link Member} object.
-     */
-    protected void setMember(Member member) {
-        this.member = member;
-    }
-
-
-
-
 }
