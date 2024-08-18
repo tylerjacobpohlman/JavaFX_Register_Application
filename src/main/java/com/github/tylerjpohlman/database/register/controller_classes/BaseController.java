@@ -32,30 +32,11 @@ public abstract class BaseController {
      * Associated Member found in MySQL database
      */
     protected Member member = null;
+
     /**
      * Data Access Object used to interface with MySQL database.
      */
     protected JdbcUserDAO jdbcUserDAO = null;
-    /**
-     * file name for the main view FXML file
-     */
-    protected static final String mainFXMLFile = "main-view.fxml";
-    /**
-     * file name for the introduction view FXML file
-     */
-    protected static final String introductionFXMLFile = "introduction-view.fxml";
-    /**
-     * file name for the member view FXML file
-     */
-    protected static final String memberFXMLFile = "member-view.fxml";
-    /**
-     * file name for the pay view FXML file
-     */
-    protected static final String payFXMLFile = "pay-view.fxml";
-    /**
-     * file name for the member lookup FXML file
-     */
-    protected static final String itemLookupFXMLFile = "lookup-view.fxml";
 
     /**
      * Sets the data access object passed between controller classes.
@@ -105,7 +86,7 @@ public abstract class BaseController {
      * @throws IOException if error occurs while loading FXML file
      */
     protected void goToIntroductionWindow(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(introductionFXMLFile));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(IntroductionController.introductionFXMLFile));
         Parent root = fxmlLoader.load();//instantiates all the objects in the FXML file
         //grab the Stage object using the Event object
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
