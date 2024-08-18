@@ -15,8 +15,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * An abstract superclass used for the functionality between controller classes
- * which inherit it. </p>
+ * An abstract superclass used for the functionality between controller classes which inherit it. </p>
  * The Super Class for all the Controller classes. This Abstract Class is primarily used to switch layouts between
  * the controllers and associated fxml files. Likewise, it also contains the {@link JdbcUserDAO} class which is
  * used by all the controllers to interface with the backend database. Any newly created controller class should extend
@@ -44,7 +43,7 @@ public abstract class BaseController {
      * better readability.
      * @param jdbcUserDAO {@link JdbcUserDAO}, the given data access object
      */
-    public void setJdbcUserDAO(JdbcUserDAO jdbcUserDAO) {
+    private void setJdbcUserDAO(JdbcUserDAO jdbcUserDAO) {
         this.jdbcUserDAO = jdbcUserDAO;
     }
 
@@ -54,21 +53,18 @@ public abstract class BaseController {
      * better readability.
      * @param member {@link Member} object.
      */
-    protected void setMember(Member member) {
+    private void setMember(Member member) {
         this.member = member;
     }
 
     /**
      * Sets the current window to a new window given the name of that window's FXML file. <p></p>
-     * WARNING: This method returns a generic type and requires the caller to ensure that the type of the controller in
-     * the FXML file matches the expected type.
-     * A {@link ClassCastException} will be thrown at runtime if the types do not match.
      * <p></p>
      * @param fileName name of FXML file
      * @param event {@link ActionEvent} representing a button click
      * @param jdbcUserDAO {@link JdbcUserDAO} data access object used to interface with the database
      * @param member {@link Member} associated membership information
-     * @return {@code <T> T} the controller of type T associated with the loaded FXML file
+     * @return {@link BaseController} associated with the loaded FXML file
      * @throws IOException if error occurs when loading FXML file
      * @throws ClosedConnectionException if there's an issue when reaching the database
      */
