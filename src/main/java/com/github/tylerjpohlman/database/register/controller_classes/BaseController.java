@@ -58,7 +58,24 @@ public abstract class BaseController {
     }
 
     /**
-     * Sets the current window to a new window given the name of that window's FXML file. <p></p>
+     * Sets the current window to the introduction window.
+     * @param event {@link ActionEvent}, representing button click
+     * @throws IOException if error occurs while loading FXML file
+     */
+    protected void goToIntroductionWindow(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(IntroductionController.introductionFXMLFile));
+        Parent root = fxmlLoader.load();//instantiates all the objects in the FXML file
+        //grab the Stage object using the Event object
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    /**
+     * Sets the current window to a new window given the name of that window's FXML file. Used a helper class for </p>
+     * for all the other goTo[]Window methods.
      * <p></p>
      * @param fileName name of FXML file
      * @param event {@link ActionEvent} representing a button click
@@ -68,8 +85,8 @@ public abstract class BaseController {
      * @throws IOException if error occurs when loading FXML file
      * @throws ClosedConnectionException if there's an issue when reaching the database
      */
-    protected BaseController goToNextWindow(String fileName, ActionEvent event, JdbcUserDAO jdbcUserDAO, Member member) throws IOException,
-            ClosedConnectionException {
+    protected BaseController goToNextWindow(String fileName, ActionEvent event, JdbcUserDAO jdbcUserDAO, Member member)
+            throws IOException, ClosedConnectionException {
 
         if(jdbcUserDAO.isConnectionNotReachable()) {
             throw new ClosedConnectionException();
@@ -90,21 +107,6 @@ public abstract class BaseController {
         return baseController;
     }
 
-    /**
-     * Sets the current window to the introduction window.
-     * @param event {@link ActionEvent}, representing button click
-     * @throws IOException if error occurs while loading FXML file
-     */
-    protected void goToIntroductionWindow(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(IntroductionController.introductionFXMLFile));
-        Parent root = fxmlLoader.load();//instantiates all the objects in the FXML file
-        //grab the Stage object using the Event object
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
 
     /**
      * Sets the error label to text saying connection is closed and returns to the login screen.
