@@ -26,6 +26,7 @@
       </Button>
       <Button id="memberLookupButton" fx:id="memberLookupButton" layoutX="410.0" layoutY="174.0" mnemonicParsing="false" onAction="#memberLookupOnCLick" prefHeight="26.0" prefWidth="107.0" text="Member Lookup" />
       <Label id="errorLabel" fx:id="errorLabel" layoutX="15.0" layoutY="368.0" prefHeight="17.0" prefWidth="571.0" textFill="RED" />
-      <Button id="lookupItemButton" fx:id="lookupItemButton" layoutX="483.0" layoutY="79.0" mnemonicParsing="false" onAction="#lookupItemOnClick" text="LOOKUP ITEM" />
+      <Button id="lookupItemButton" fx:id="lookupItemButton" layoutX="405.0" layoutY="112.0" mnemonicParsing="false" onAction="#lookupItemOnClick" text="LOOKUP ITEM" />
+      <Label id="MembershipLabel" fx:id="membershipLabel" layoutX="405.0" layoutY="8.0" prefHeight="17.0" prefWidth="191.0" />
    </children>
 </AnchorPane>
