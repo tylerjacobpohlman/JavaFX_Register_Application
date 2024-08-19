@@ -5,6 +5,7 @@ import com.github.tylerjpohlman.database.register.helper_classes.*;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -17,8 +18,7 @@ import java.sql.SQLException;
  * to enter credentials applicable to the accessing database. <p>
  *
  * Its use to grab the login information to initialize {@code jdbcUserDAO} within {@link BaseController}.
- * Upon successful initialization, the layout is changed to {@link MainController} and passes over {@code jdbcUserDAO}
- * along with executing method {@link MainController#setAddressLabel()} in {@link MainController}.
+ * Upon successful initialization, the layout is changed to {@link MainController} and passes over {@code jdbcUserDAO}.
  *
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
@@ -113,9 +113,7 @@ public class IntroductionController extends BaseController {
         }
 
         try {
-            MainController mainController =
-                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
-            mainController.setAddressLabel();//executes method defined in class
+            goToMainWindow(event);
         }
         catch (ClosedConnectionException e) {
             errorLabel.setText("Connection has timed out, please try again...");

@@ -20,14 +20,9 @@ import java.sql.SQLException;
  * is finished.
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-24
+ * @lastModified 2024-08-19
  */
 public class PayController extends BaseController {
-    /**
-     * file name for the pay view FXML file
-     */
-    public static final String payFXMLFile = "pay-view.fxml";
-
     /**
      * Used to determine whether a receipt has been processed.
      */
@@ -141,10 +136,7 @@ public class PayController extends BaseController {
     public void setStartNewTransactionButtonOnClick(ActionEvent event) throws IOException {
 
         try {
-            //go back to the main scene
-            MainController mainController =
-                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
-            mainController.setAddressLabel();
+            goToMainWindow(event);
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);

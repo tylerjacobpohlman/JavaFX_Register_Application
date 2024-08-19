@@ -9,24 +9,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Controller class which controls the logic behind the main menu view of the program. <p>
- * Most notably {@link #addedItemsList} is populated with associated {@link Item} objects from the database.
- *
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-24
+ * @lastModified 2024-08-19
  */
 public class MainController extends BaseController {
-    /**
-     * file name for the main view FXML file
-     */
-    public static final String mainFXMLFile = "main-view.fxml";
-
     @FXML
     private Label addressLabel;
 
@@ -34,10 +29,10 @@ public class MainController extends BaseController {
     private Label membershipLabel;
 
     /**
-     * List View of Items added to the current shopping session.
+     * List View of Items added to the current shopping session. Displayed in the MainController window.
      */
     @FXML
-    private ListView<Item> addedItemsList;
+    protected ListView<Item> addedItemsList;
 
     /**
      * Text Field used to type in an item's upc.
@@ -49,7 +44,7 @@ public class MainController extends BaseController {
      * Label used to display generated errors.
      */
     @FXML
-    private Label errorLabel;
+    Label errorLabel;
 
     /**
      * Sets the address Label in the main view of the JavaFX program.
@@ -65,14 +60,13 @@ public class MainController extends BaseController {
 
     /**
      * Sets the membership Label in the main view of the JavaFX program.
-     * @param member {@link Member} object
      */
-    public void setMemberLabel(Member member) {
+    public void setMemberLabel() {
         if(member == null) {
             membershipLabel.setText("");
         }
         else {
-            membershipLabel.setText(member.toString());
+            membershipLabel.setText("Welcome " + member.toString() + "!");
         }
     }
 
@@ -126,7 +120,24 @@ public class MainController extends BaseController {
     }
 
     /**
-     * Logic when clicking 'Member Lookup' in main view.
+     * Logic when clicking "LOOKUP ITEM" in the main view.
+     * @param event {@link ActionEvent} object representing the button click
+     * @throws IOException if unable to read associated FXML document
+     */
+    public void lookupItemOnClick(ActionEvent event) throws IOException {
+        //resets the error label
+        errorLabel.setText("");
+
+        try {
+            goToLookupWindow(event);
+        }
+        catch (ClosedConnectionException e) {
+            setErrorLabelAndGoBackToIntroduction(errorLabel, event);
+        }
+    }
+
+    /**
+     * Logic when clicking 'Member Lookup' in the main view.
      * @param event {@link ActionEvent} object representing button click in GUI
      * @throws IOException if unable to read associated FXML document
      */
@@ -138,8 +149,7 @@ public class MainController extends BaseController {
         }
 
         try {
-            MemberController memberController =
-                    (MemberController) goToNextWindow(MemberController.memberFXMLFile, event, jdbcUserDAO, member);
+            goToMemberWindow(event);
         }
         catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
@@ -157,33 +167,10 @@ public class MainController extends BaseController {
             return;
         }
 
-        //checks if connection is closed
-        if(jdbcUserDAO.isConnectionNotReachable()) {
-            setErrorLabelAndGoBackToIntroduction(errorLabel, event);
-            return;
-        }
-
-        int receiptNumber;
-        double amountDue;
-
         try {
-            receiptNumber = jdbcUserDAO.createReceipt(member);
-            amountDue = jdbcUserDAO.getReceiptTotal(addedItemsList.getItems(), receiptNumber, member);
+            goToPayWindow(event);
 
-        //error is unlikely to be thrown if connection was already check, so click the button again
         } catch (SQLException e) {
-            errorLabel.setText(e.getMessage());
-            return;
-        }
-
-        try {
-            //considering all goes well, goes on to the final scene to get the amount paid and amount due
-            PayController payController =
-                    (PayController) goToNextWindow(PayController.payFXMLFile, event, jdbcUserDAO, member);
-            payController.setReceiptNumber(receiptNumber);
-            payController.setAmountTotalLabel(amountDue);
-
-        } catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
         }
     }

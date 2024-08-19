@@ -17,14 +17,9 @@ import java.sql.SQLException;
  * {@link #goBackOnClick} returns to {@link MainController}.
  * @author Tyler Pohlman
  * @version 1.0, Date Created: 2023-11-14
- * @lastModified 2023-11-24
+ * @lastModified 2024-08-19
  */
 public class MemberController extends BaseController{
-    /**
-     * file name for the member view FXML file
-     */
-    public static final String memberFXMLFile = "member-view.fxml";
-
     /**
      * Label used to display generated errors.
      */
@@ -89,10 +84,7 @@ public class MemberController extends BaseController{
         }
 
         try {
-            MainController mainController =
-                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
-            mainController.setMemberLabel(member);
-            mainController.setAddressLabel();
+            goToMainWindow(event);
 
         } catch (ClosedConnectionException | IOException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel,event);
@@ -106,9 +98,7 @@ public class MemberController extends BaseController{
      */
     public void goBackOnClick(ActionEvent event) throws IOException {
         try {
-            MainController mainController =
-                    (MainController) goToNextWindow(MainController.mainFXMLFile, event, jdbcUserDAO, member);
-            mainController.setAddressLabel();
+            goToMainWindow(event);
         } catch (ClosedConnectionException e) {
             setErrorLabelAndGoBackToIntroduction(errorLabel, event);
         }
